@@ -1,4 +1,7 @@
 import {
+  require_leaflet_src
+} from "./chunk-GVIK23OT.js";
+import {
   Directive,
   ElementRef,
   EventEmitter,
@@ -19,9 +22,6 @@ import {
   ɵɵresolveWindow
 } from "./chunk-XXTULQMF.js";
 import "./chunk-RSS3ODKE.js";
-import {
-  require_leaflet_src
-} from "./chunk-GVIK23OT.js";
 import {
   __toESM
 } from "./chunk-R327OCYJ.js";
