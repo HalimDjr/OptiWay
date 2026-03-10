@@ -4,6 +4,6 @@ public enum StatutCommande {
     NON_PLANIFIEE,
     PLANIFIEE,
     EN_COURS,
-    LIVREE,
-    ANNULEE
+    ANNULEE,
+    LIVREE
 }
