@@ -17,6 +17,9 @@ public class TourneeEntity {
     private Date date;
     private Time heureDepart;
 
+    @OneToOne
+    private CommandeEntity commande;
+
     @OneToOne(mappedBy = "vehicule")
     private VehiculeEntity vehicule;
 
