@@ -1,9 +1,8 @@
 package fr.uga.miage.l3.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 public class AdresseEntity  {
@@ -14,4 +13,8 @@ public class AdresseEntity  {
     private String paye;
     private double latitude;
     private double longitude;
+
+    @OneToMany
+    @JoinColumn(name = "adresse_id", referencedColumnName = "id")
+    private Set<CommandeEntity> commandes;
 }
