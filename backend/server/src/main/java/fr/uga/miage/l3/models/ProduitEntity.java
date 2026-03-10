@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class Produit {
+public class ProduitEntity {
     @Id
     private String reference;
 
