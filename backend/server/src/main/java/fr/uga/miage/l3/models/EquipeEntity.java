@@ -18,7 +18,7 @@ public class EquipeEntity {
     @OneToOne(mappedBy = "equipe")
     private TourneeEntity tournee;
 
-    //OK EQUIPE CONDUCTEUR
+    //OK EQUIPE CONDUCTEURr
     @OneToOne(mappedBy ="equipe")
     private LivreurEntity conducteur ;
 

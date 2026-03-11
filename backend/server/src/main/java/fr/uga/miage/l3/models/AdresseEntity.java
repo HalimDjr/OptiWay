@@ -6,6 +6,7 @@ import java.util.Set;
 
 @Entity
 public class AdresseEntity  {
+    //
     @Id
     private Long id;
     private int numeroRue;

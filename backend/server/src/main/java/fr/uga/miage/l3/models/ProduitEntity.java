@@ -10,6 +10,4 @@ public class ProduitEntity {
     @Id
     private String reference;
     private String nom;
-
-
 }

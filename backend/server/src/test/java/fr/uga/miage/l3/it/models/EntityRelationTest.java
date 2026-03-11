@@ -260,8 +260,6 @@ class EntityRelationTest {
         EntityTestUtils.assertFieldType(ProduitEntity.class, "nom", String.class);
         //EntityTestUtils.assertFieldType(ProduitEntity.class, "poids", double.class);
 
-        // --- Relations ---
-        // Un produit appartient à une commande (Many Produits -> One Commande)
         //EntityTestUtils.assertAnnotationPresent(ProduitEntity.class, "commande", ManyToOne.class);
     }
 }

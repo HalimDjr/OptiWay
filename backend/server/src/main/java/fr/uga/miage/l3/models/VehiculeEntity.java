@@ -11,7 +11,7 @@ public class VehiculeEntity {
     private double capacitePoidsMax;
     private double capaciteVolumeMax;
 
-    //OK VEHICULE TOURNEE
+    //OK VEHICULE TOURNEEe
     @OneToOne
     private TourneeEntity tournee;
 }

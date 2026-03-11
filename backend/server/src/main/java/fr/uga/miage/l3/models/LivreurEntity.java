@@ -15,7 +15,7 @@ public class LivreurEntity {
     private boolean permis;
     private String telephone;
 
-    //OK LIVREUR EQUIPE
+    //OK LIVREUR EQUIPEe
     @OneToOne
     private EquipeEntity equipe;
 

@@ -21,7 +21,7 @@ public class TourneeEntity {
     private Timestamp heureDepart;
     private double distanceTotale;
 
-    //OK TOURNEE COMMANDES
+    //OK TOURNEE COMMANDESs
     @OneToMany
     private Set<CommandeEntity> commandes;
 
