@@ -12,15 +12,18 @@ import java.util.Set;
 public class EquipeEntity {
     @Id
     private int numeroEquipe;
-    private double nombreHeuresMax;
+    private double nbHeuresMax;
 
-    @OneToOne
+    //OK EQUIPE TOURNEE
+    @OneToOne(mappedBy = "equipe")
     private TourneeEntity tournee;
 
-    @OneToOne
-    private LivreurEntity livreur;
+    //OK EQUIPE CONDUCTEUR
+    @OneToOne(mappedBy ="equipe")
+    private LivreurEntity conducteur ;
 
+    //OK EQUIPE
     @OneToMany
-    private Set<LivreurEntity> livreurs;
+    private Set<LivreurEntity> manutentionnaires;
 }
 

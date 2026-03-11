@@ -9,8 +9,10 @@ public class AdresseEntity  {
     @Id
     private Long id;
     private int numeroRue;
+    private String rue;
+    private String ville;
     private int codePostal;
-    private String paye;
+    private String pays;
     private double latitude;
     private double longitude;
 

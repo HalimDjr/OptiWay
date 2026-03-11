@@ -9,10 +9,7 @@ import jakarta.validation.constraints.Size;
 public class ProduitEntity {
     @Id
     private String reference;
-
     private String nom;
-
-    private double poids;
 
 
 }

@@ -12,13 +12,14 @@ public class LivreurEntity {
     private int idLivreur;
     private String nom;
     private String prenom;
-    private boolean isPermisDeConduire;
-    private String numeroTelephone;
+    private boolean permis;
+    private String telephone;
 
+    //OK LIVREUR EQUIPE
     @OneToOne
-    private EquipeEntity conducteur;
+    private EquipeEntity equipe;
 
     @ManyToOne
     @Size(min=1,max=2)
-    private EquipeEntity manutentionnaire;
+    private EquipeEntity equipe2;
 }

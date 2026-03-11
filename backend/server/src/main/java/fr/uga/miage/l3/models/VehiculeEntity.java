@@ -8,8 +8,10 @@ import jakarta.persistence.OneToOne;
 public class VehiculeEntity {
     @Id
     private int matricule;
-    private double poidsMax;
+    private double capacitePoidsMax;
+    private double capaciteVolumeMax;
 
+    //OK VEHICULE TOURNEE
     @OneToOne
     private TourneeEntity tournee;
 }
