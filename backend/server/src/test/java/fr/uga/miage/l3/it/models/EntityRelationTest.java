@@ -175,6 +175,9 @@ class EntityRelationTest {
 
         // Une équipe effectue une tournée (One Equipe -> One Tournée)
         EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "tournee", OneToOne.class);
+
+        // Une equipe utilise un véhicule (One -> One)
+        EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "vehicule", OneToOne.class);
     }
 
     // =========================================================================
@@ -208,8 +211,6 @@ class EntityRelationTest {
         // Une tournée distribue plusieurs commandes (One Tournée -> Many Commandes)
         EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "commandes", OneToMany.class);
 
-        // Une tournée utilise un véhicule (One -> One)
-        EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "vehicule", OneToOne.class);
 
         // Une tournée est effectuée par une équipe (One -> One)
         EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "equipe", OneToOne.class);
@@ -237,7 +238,7 @@ class EntityRelationTest {
 
         // --- Relations ---
         // Un véhicule est affecté à une tournée (One -> One)
-        EntityTestUtils.assertAnnotationPresent(VehiculeEntity.class, "tournee", OneToOne.class);
+        EntityTestUtils.assertAnnotationPresent(VehiculeEntity.class, "equipe", OneToOne.class);
     }
 
     // =========================================================================

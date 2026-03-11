@@ -25,5 +25,9 @@ public class EquipeEntity {
     //OK EQUIPE
     @OneToMany
     private Set<LivreurEntity> manutentionnaires;
+
+    //OK VEHICULE TOURNEE
+    @OneToOne(mappedBy = "equipe")
+    private VehiculeEntity vehicule;
 }
 

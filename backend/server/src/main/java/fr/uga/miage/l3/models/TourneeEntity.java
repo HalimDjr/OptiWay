@@ -25,9 +25,7 @@ public class TourneeEntity {
     @OneToMany
     private Set<CommandeEntity> commandes;
 
-    //OK VEHICULE TOURNEE
-    @OneToOne(mappedBy = "vehicule")
-    private VehiculeEntity vehicule;
+
 
     //OK EQUIPE TOURNEE
     @OneToOne

@@ -13,5 +13,5 @@ public class VehiculeEntity {
 
     //OK VEHICULE TOURNEEe
     @OneToOne
-    private TourneeEntity tournee;
+    private EquipeEntity equipe;
 }
