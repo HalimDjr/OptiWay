@@ -4,11 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Time;
 import java.util.Set;
 
+/// ///
 @Entity
+@Getter
+@Setter
 public class EquipeEntity {
     @Id
     private int numeroEquipe;
