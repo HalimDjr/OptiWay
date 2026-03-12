@@ -1,6 +1,6 @@
 package fr.uga.miage.l3.it;
 
-import fr.uga.miage.l3.endpoints.request.ElementRequest;
+import fr.uga.miage.l3.request.ElementRequest;
 import fr.uga.miage.l3.errors.ErrorDTO;
 import fr.uga.miage.l3.models.ElementEntity;
 import fr.uga.miage.l3.repository.ElementRepository;

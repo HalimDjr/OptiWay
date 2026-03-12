@@ -1,6 +1,6 @@
 package fr.uga.miage.l3.endpoints;
 
-import fr.uga.miage.l3.endpoints.request.ElementRequest;
+import fr.uga.miage.l3.request.ElementRequest;
 import fr.uga.miage.l3.errors.ErrorDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

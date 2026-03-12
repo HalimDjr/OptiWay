@@ -1,7 +1,7 @@
 package fr.uga.miage.l3.controllers;
 
 import fr.uga.miage.l3.endpoints.ElementEndpoints;
-import fr.uga.miage.l3.endpoints.request.ElementRequest;
+import fr.uga.miage.l3.request.ElementRequest;
 import fr.uga.miage.l3.services.ElementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
