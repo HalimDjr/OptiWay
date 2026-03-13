@@ -14,7 +14,7 @@ public class CommandComponent {
     private final CommandeRepository commandeRepository;
 
     public Set<CommandeEntity> getAllCommandesNonlivres() {
-        return commandeRepository.findCommandeEntitiesByStatutEquals(StatutCommande.NON_PLANIFIEE);
+        return commandeRepository.getNonPlanifieesOuAnnulees();
     }
 
     public int getNombreCommandesNonLivrees(){

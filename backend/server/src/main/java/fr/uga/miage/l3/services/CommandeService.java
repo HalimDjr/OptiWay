@@ -29,7 +29,14 @@ public class CommandeService {
         Iterator<CommandeEntity> iterator = commandeEntities.iterator();
 
         while(iterator.hasNext()){
-            commandResponseDTOSet.add(commandMapper.toResponse(iterator.next()));
+            CommandeEntity commandEntityTemp=iterator.next();
+            CommandResponseDTO commandResponseDTOTemp=commandMapper.toResponse(commandEntityTemp);
+            // manuellement je vais set les attributs longtitude , latitude , status
+            commandResponseDTOTemp.setStatus(commandEntityTemp.getStatut().toString());
+            commandResponseDTOTemp.setLongtitude(commandEntityTemp.getAdresse().getLongitude());
+            commandResponseDTOTemp.setLatitude(commandEntityTemp.getAdresse().getLatitude());
+            commandResponseDTOSet.add(commandResponseDTOTemp);
+
         }
 
         return commandResponseDTOSet;

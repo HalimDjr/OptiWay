@@ -22,4 +22,10 @@ public class CommandResponseDTO {
     @Schema(description = "volume de la commande")
     private double volume;
 
+    @Schema(description="latitude")
+    private double latitude;
+
+    @Schema (description="longtitude")
+    private double longtitude;
+
 }
