@@ -20,4 +20,5 @@ public interface EquipeEndpoints {
     @GetMapping("/heures-max")
     double getHeuresMax();
 
+
 }

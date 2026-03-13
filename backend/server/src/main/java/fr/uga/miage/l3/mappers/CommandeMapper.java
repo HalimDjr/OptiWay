@@ -10,5 +10,6 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public interface CommandeMapper {
 
-    Set<CommandResponseDTO> toResponse(Set<CommandeEntity> commandes);
+    CommandResponseDTO toResponse(CommandeEntity commandes);
+
 }

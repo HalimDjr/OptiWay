@@ -17,7 +17,7 @@ public interface TourneeEndpoints {
     @ApiResponse(responseCode = "200",description = "créer une playlist")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/tournee")
-    TourneeResponseDTO createTournee(@RequestParam TourneeRequest tourneeRequest);
+    TourneeResponseDTO createTournee( TourneeRequest tourneeRequest);
 
 
     @Operation(description = "lister toutes les tournees d'une date donnée")

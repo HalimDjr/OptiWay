@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
 @Service
@@ -21,7 +23,12 @@ public class CommandeService {
 
     public Set<CommandResponseDTO> getAllCommandesNonLivres(){
         Set<CommandeEntity> commandeEntities=commandComponent.getAllCommandesNonlivres();
-        return commandMapper.toResponse(commandeEntities);
+        Set<CommandResponseDTO> commandResponseDTOSet= Collections.emptySet();
+        Iterator<CommandeEntity> iterator=commandeEntities.iterator();
+        while(iterator.hasNext()){
+            commandResponseDTOSet.add(commandMapper.toResponse(iterator.next()));
+        }
+        return commandResponseDTOSet;
     }
 
 }
