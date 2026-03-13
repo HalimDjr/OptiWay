@@ -12,6 +12,7 @@ public class CommandeEntity {
     @Id
     private String numeroCommande;
     private Date dateLimite;
+    @Enumerated(EnumType.STRING)
     private StatutCommande statut;
     private double poids;
     private double volume;

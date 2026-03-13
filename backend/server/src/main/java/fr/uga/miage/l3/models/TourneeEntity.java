@@ -16,6 +16,7 @@ public class TourneeEntity {
     @Id
     private int idTournee;
     private double tempsTotal;
+    @Enumerated(EnumType.STRING)
     private StatutTournee statut;
     private Date dateTournee;
     private Timestamp heureDepart;
