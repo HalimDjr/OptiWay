@@ -5,11 +5,13 @@ import fr.uga.miage.l3.responses.CommandResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Set;
+import java.text.SimpleDateFormat;
 
 @Mapper(componentModel = "spring")
 public interface CommandeMapper {
 
-    CommandResponseDTO toResponse(CommandeEntity commandes);
+
+    CommandResponseDTO toResponse(CommandeEntity commande);
+
 
 }
