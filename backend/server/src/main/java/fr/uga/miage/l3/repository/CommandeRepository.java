@@ -8,4 +8,6 @@ import java.util.Set;
 
 public interface CommandeRepository extends JpaRepository<CommandeEntity,String>{
     Set<CommandeEntity> findCommandeEntitiesByStatutEquals (StatutCommande statusSouhaité);
+
+    int countByStatut(StatutCommande statut);
 }

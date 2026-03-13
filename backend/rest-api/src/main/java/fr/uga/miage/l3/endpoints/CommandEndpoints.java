@@ -20,13 +20,11 @@ public interface CommandEndpoints {
     Set<CommandResponseDTO> getAllCommandesNonLivres();
 
 
-    /*@Operation(description = "le nombre de commandes non livrés")
-    @ApiResponse(responseCode = "200",description = "le nombre de comandes non livrés est trouvé ")
+    @Operation(description = "le nombre de commandes non livrées")
+    @ApiResponse(responseCode = "200",description = "le nombre de comandes non livrées est trouvé ")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/non-livres/count")
-    Long getNombreCommandesNonLivres();*/
-    /*
-    * c'est commenté car CommandEndpoint doit l'implémenter ,sinon erreur de compilation
-    * */
+    int getNombreCommandesNonLivres();
+
 
 }

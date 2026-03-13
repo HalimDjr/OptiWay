@@ -9,6 +9,7 @@ import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -19,16 +20,24 @@ public class CommandeService {
    private final CommandeMapper commandMapper;
 
 
-
-
     public Set<CommandResponseDTO> getAllCommandesNonLivres(){
-        Set<CommandeEntity> commandeEntities=commandComponent.getAllCommandesNonlivres();
-        Set<CommandResponseDTO> commandResponseDTOSet= Collections.emptySet();
-        Iterator<CommandeEntity> iterator=commandeEntities.iterator();
+
+        Set<CommandeEntity> commandeEntities = commandComponent.getAllCommandesNonlivres();
+
+        Set<CommandResponseDTO> commandResponseDTOSet = new HashSet<>();
+
+        Iterator<CommandeEntity> iterator = commandeEntities.iterator();
+
         while(iterator.hasNext()){
             commandResponseDTOSet.add(commandMapper.toResponse(iterator.next()));
         }
+
         return commandResponseDTOSet;
+    }
+
+    public Integer getNombreCommandesNonLivres(){
+
+        return commandComponent.getNombreCommandesNonLivrees() ;
     }
 
 }
