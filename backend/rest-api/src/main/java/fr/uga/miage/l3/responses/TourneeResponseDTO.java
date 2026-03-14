@@ -1,11 +1,12 @@
 package fr.uga.miage.l3.responses;
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Set;
+
 
 @Data
 @Schema(description = "DTO représentant une tournée de livraison")
@@ -21,8 +22,7 @@ private Date dateTournee;
 private Timestamp heureDepart;
 @Schema(description = "Distance totale parcourue pendant la tournée en kilomètres", example = "42.7")
 private double distanceTotale;
-@Schema(description = "Liste des identifiants ou références des commandes associées à la tournée")
-private Set<CommandResponseDTO> commandes;
+
 @Schema(description = "Numéro de l'équipe responsable de la tournée", example = "3")
 private int numeroEquipe;
 }

@@ -1,9 +1,7 @@
 package fr.uga.miage.l3.mappers;
 
-import fr.uga.miage.l3.models.CommandeEntity;
 import fr.uga.miage.l3.models.TourneeEntity;
 import fr.uga.miage.l3.request.TourneeRequest;
-import fr.uga.miage.l3.responses.CommandResponseDTO;
 import fr.uga.miage.l3.responses.TourneeResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,6 +10,11 @@ import org.mapstruct.Mapping;
 public interface TourneeMapper {
 
     TourneeEntity toEntity(TourneeRequest tourneeRequest);
-    CommandeEntity map(CommandResponseDTO value);
+
+
+
+
+    @Mapping(target = "numeroEquipe", source = "equipe.numeroEquipe")
+    @Mapping(target = "commandes", ignore = true) // <- ignore les commandes
     TourneeResponseDTO toResponse(TourneeEntity tourneeEntity);
 }

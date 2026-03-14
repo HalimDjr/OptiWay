@@ -1,19 +1,23 @@
 package fr.uga.miage.l3.request;
 
-import fr.uga.miage.l3.responses.CommandResponseDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Set;
 @Data
 public class TourneeRequest {
     private int idTournee;
     private double tempsTotal;
-    private Date dateTournee;
+
+    // format ISO8601 pour que Spring Jackson puisse parser
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    private java.util.Date dateTournee;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Timestamp heureDepart;
+
     private double distanceTotale;
-    private String statutTournee;
-    private Set<CommandResponseDTO> commandes;
+    private int statutTournee;
+    private Set<String> commandes_ids;
     private int numeroEquipe;
 }

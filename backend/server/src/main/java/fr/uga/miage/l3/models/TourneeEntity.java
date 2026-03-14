@@ -2,15 +2,19 @@ package fr.uga.miage.l3.models;
 
 import fr.uga.miage.l3.enums.StatutTournee;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Time;
+
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class TourneeEntity {
     @Id
