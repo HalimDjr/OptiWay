@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @RequestMapping("/api/tournees")
 public interface TourneeEndpoints {
@@ -17,18 +17,18 @@ public interface TourneeEndpoints {
     @ApiResponse(responseCode = "200",description = "créer une playlist")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/tournee")
-    TourneeResponseDTO createTournee( TourneeRequest tourneeRequest);
+    TourneeResponseDTO createTournee(@RequestBody TourneeRequest tourneeRequest);
 
 
     @Operation(description = "lister toutes les tournees d'une date donnée")
     @ApiResponse(responseCode = "200",description = "récupérer toutes les tournes d'une data")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{date}")
-    Set<TourneeResponseDTO> getAllTournees(
-                                           @PathVariable(name="date")
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                           LocalDate date
-                                           );
+    List<TourneeResponseDTO> getAllTournees(
+            @PathVariable(name="date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
+    );
 
 
 }
