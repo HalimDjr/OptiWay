@@ -9,12 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
+@RequestMapping("/api/tournees")
 public class TourneeController  implements TourneeEndpoints {
     private final TourneeService tourneeService;
 
@@ -25,7 +28,7 @@ public class TourneeController  implements TourneeEndpoints {
     }
 
     @Override
-    public Set<TourneeResponseDTO> getAllTournees(LocalDate date) {
-        return Set.of();
+    public List<TourneeResponseDTO> getAllTournees(LocalDate date) {
+        return tourneeService.getTourneesByDate(date);
     }
 }
