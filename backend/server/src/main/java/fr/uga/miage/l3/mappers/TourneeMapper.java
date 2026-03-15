@@ -15,6 +15,6 @@ public interface TourneeMapper {
 
 
     @Mapping(target = "numeroEquipe", source = "equipe.numeroEquipe")
-    @Mapping(target = "commandes", ignore = true) // <- ignore les commandes
+
     TourneeResponseDTO toResponse(TourneeEntity tourneeEntity);
 }
