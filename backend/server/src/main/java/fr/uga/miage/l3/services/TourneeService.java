@@ -14,6 +14,8 @@ import fr.uga.miage.l3.repository.CommandeRepository;
 
 import fr.uga.miage.l3.request.TourneeRequest;
 import fr.uga.miage.l3.responses.TourneeResponseDTO;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+
+
 public class TourneeService {
     private final TourneeComponent tourneeComponent;
     private final TourneeMapper tourneeMapper;
@@ -61,7 +65,6 @@ public class TourneeService {
                 tourneeRequest.getIdTournee(),
                 tourneeRequest.getTempsTotal(),
                 statutTourneeSelonValeur(tourneeRequest.getStatutTournee()),
-                tourneeRequest.getDateTournee(),
                 tourneeRequest.getHeureDepart(),
                 tourneeRequest.getDistanceTotale(),
                 commandesSet,

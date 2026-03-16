@@ -1,7 +1,15 @@
 package fr.uga.miage.l3.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class EntrepotEntity {
     @Id
@@ -9,7 +17,6 @@ public class EntrepotEntity {
     private String nom;
 
     @OneToOne
-    @JoinColumn(name ="id_adresse", referencedColumnName = "id")
     private AdresseEntity adresse;
 }
 

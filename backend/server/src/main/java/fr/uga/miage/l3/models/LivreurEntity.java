@@ -16,8 +16,8 @@ public class LivreurEntity {
     private String telephone;
 
     //OK LIVREUR EQUIPEe
-    @OneToOne(mappedBy ="conducteur")
-    private EquipeEntity equipe;
+    @OneToOne(mappedBy = "conducteur")
+    private EquipeEntity equipee ;
 
     @ManyToOne
     @Size(min=1,max=2)

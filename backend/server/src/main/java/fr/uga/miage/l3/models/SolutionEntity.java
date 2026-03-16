@@ -13,14 +13,13 @@ public class SolutionEntity {
     private Date date;
     private boolean activee;
     private int nbCommandesLivrees;
-    @Column(precision = 4,  scale = 2)
     private double tempsTotal;
     private double distanceTotale;
     private double coutTotal;
     private int nbEquipesUtilisees;
 
     @OneToMany
-    @JoinColumn(name ="id_tournee",  referencedColumnName = "idTournee")
+    @JoinColumn(name ="id_solution",  referencedColumnName = "id")
     private Set<TourneeEntity> tournees;
 
 

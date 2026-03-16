@@ -24,7 +24,6 @@ public class CommandeEntity {
     //OK AVEC ADRESSE
 
     @ManyToOne
-    @JoinColumn(name = "adresse_id", referencedColumnName = "id")
     private AdresseEntity adresse;
 
 

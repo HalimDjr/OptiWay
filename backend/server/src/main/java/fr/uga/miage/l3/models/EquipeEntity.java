@@ -25,8 +25,7 @@ public class EquipeEntity {
     private LivreurEntity conducteur ;
 
     //OK EQUIPE
-    @OneToMany
-    @JoinColumn(name ="id_livreur", referencedColumnName = "idLivreur")
+    @OneToMany(mappedBy = "equipe2")
     private Set<LivreurEntity> manutentionnaires;
 
 
