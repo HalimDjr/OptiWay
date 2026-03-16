@@ -1,0 +1,451 @@
+<div class="container">
+    <header class="page-header">
+        <h1>Optimisation des tournées</h1>
+    </header>
+
+    <!-- CARTE -->
+    <div class="map-container">
+        <div class="map-wrapper"
+             leaflet
+             [leafletOptions]="options"
+             [leafletLayers]="layers()">
+        </div>
+    </div>
+
+    <!-- MESSAGE STATUT -->
+    @if (messageStatut()) {
+        <div class="statut-bar">
+            {{ messageStatut() }}
+        </div>
+    }
+
+    <div class="controls-section">
+
+        <!-- ETAPE 1 : COMMANDES -->
+        <div class="control-card">
+            <div class="card-header">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                <h2>Étape 1 — Commandes</h2>
+            </div>
+
+            <button
+                    (click)="chargerCommandesNonPlanifiees()"
+                    class="btn-action btn-primary"
+                    [disabled]="isLoadingCommandes()">
+                @if (isLoadingCommandes()) {
+                    ⏳ Chargement...
+                } @else {
+                📦 Afficher les commandes non planifiées
+            }
+            </button>
+
+            @if (commandesNonPlanifiees().length > 0) {
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Commandes non planifiées</span>
+                        <span class="info-value">{{ commandesNonPlanifiees().length }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Équipes disponibles</span>
+                        <span class="info-value">{{ nbEquipes() }}</span>
+                    </div>
+                </div>
+
+                <div class="commandes-list">
+                    @for (cmd of commandesNonPlanifiees(); track cmd.numeroCommande) {
+                        <div class="commande-item">
+                            <span class="commande-id">{{ cmd.numeroCommande }}</span>
+                            <span class="commande-poids">{{ cmd.poids }} kg</span>
+                            <span class="commande-vol">{{ cmd.volume }} m³</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- ETAPE 2 : OPTIMISATION + SAUVEGARDE -->
+        <div class="control-card">
+            <div class="card-header">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                <h2>Étape 2 — Optimisation</h2>
+            </div>
+
+            <div class="form-group">
+                <label for="maxTime">Temps max par véhicule (secondes)</label>
+                <input
+                    #maxTime
+                    id="maxTime"
+                    type="number"
+                    min="1000"
+                    value="10000"
+                    class="form-input" />
+            </div>
+
+            <!-- BOUTON OPTIMISER -->
+            <button
+                    (click)="optimiser(maxTime.valueAsNumber)"
+                    class="btn-action btn-optimize"
+                    [disabled]="isLoadingOptimisation() || commandesNonPlanifiees().length === 0">
+                @if (isLoadingOptimisation()) {
+                    ⏳ Optimisation en cours...
+                } @else {
+                ⚡ Optimiser et voir sur la carte
+            }
+            </button>
+
+            <!-- BOUTON SAUVEGARDER (visible seulement après optimisation) -->
+            @if (optimisationFaite()) {
+                <div class="save-section">
+                    <p class="save-hint">✅ Résultat affiché sur la carte — satisfait ?</p>
+                    <button
+                            (click)="sauvegarder()"
+                            class="btn-action btn-save"
+                            [disabled]="isLoadingSauvegarde()">
+                        @if (isLoadingSauvegarde()) {
+                            ⏳ Sauvegarde en cours...
+                        } @else {
+                        💾 Sauvegarder les tournées en base
+                    }
+                    </button>
+                </div>
+            }
+
+            @if (commandesNonPlanifiees().length === 0) {
+                <p class="hint">⚠️ Chargez d'abord les commandes (étape 1)</p>
+            }
+        </div>
+
+        <!-- ETAPE 3 : VOIR TOURNEES -->
+        <div class="control-card full-width">
+            <div class="card-header">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <h2>Étape 3 — Voir les tournées</h2>
+            </div>
+
+            <div class="date-form">
+                <div class="form-group">
+                    <label for="dateTournee">Date des tournées</label>
+                    <input
+                        #dateTournee
+                        id="dateTournee"
+                        type="date"
+                        [value]="today()"
+                        class="form-input" />
+                </div>
+                <button
+                        (click)="voirTournees(dateTournee.value)"
+                        class="btn-action btn-secondary"
+                        [disabled]="isLoadingTournees()">
+                    @if (isLoadingTournees()) {
+                        ⏳ Chargement...
+                    } @else {
+                    🔍 Voir les tournées
+                }
+                </button>
+            </div>
+
+            @if (tournees().length > 0) {
+                <div class="tournees-list">
+                    @for (tournee of tournees(); track tournee.idTournee) {
+                        <div class="tournee-item">
+                            <div class="tournee-header">
+                                <span class="tournee-id">Tournée #{{ tournee.idTournee }}</span>
+                                <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
+                                <span class="tournee-statut">{{ tournee.statut }}</span>
+                            </div>
+                            <div class="tournee-details">
+                                <span>⏱ {{ tournee.tempsTotal }}h</span>
+                                <span>📍 {{ tournee.distanceTotale }} km</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } @else if (!isLoadingTournees()) {
+            <p class="hint">Aucune tournée trouvée pour cette date</p>
+        }
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+    }
+
+    .map-container {
+        margin-bottom: 1.5rem;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .map-wrapper { height: 550px; }
+
+    .statut-bar {
+        background: #ebf4ff;
+        border: 1px solid #bee3f8;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: #2b6cb0;
+    }
+
+    .controls-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    .control-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .full-width { grid-column: 1 / -1; }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.875rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .card-header h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .icon { width: 22px; height: 22px; color: #667eea; }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .form-input {
+        padding: 0.625rem 0.875rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.938rem;
+        transition: all 0.2s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+
+    .btn-action {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.938rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 1rem;
+    }
+
+    .btn-action:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+    }
+
+    .btn-optimize {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .btn-optimize:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245,87,108,0.4);
+    }
+
+    .save-section {
+        border: 2px dashed #48bb78;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f0fff4;
+    }
+
+    .save-hint {
+        font-size: 0.875rem;
+        color: #276749;
+        margin: 0 0 0.75rem 0;
+        font-weight: 500;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        margin-bottom: 0;
+    }
+
+    .btn-save:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(72,187,120,0.4);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        width: auto;
+        margin-bottom: 0;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67,233,123,0.4);
+    }
+
+    .info-box {
+        background: #f7fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.375rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.875rem; color: #718096; }
+    .info-value { font-size: 0.875rem; font-weight: 700; color: #2d3748; }
+
+    .commandes-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .commande-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 0.875rem;
+    }
+
+    .commande-item:last-child { border-bottom: none; }
+    .commande-id { font-weight: 600; color: #4a5568; }
+    .commande-poids { color: #718096; }
+    .commande-vol { color: #a0aec0; font-size: 0.8rem; }
+
+    .date-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        margin-bottom: 1rem;
+    }
+
+    .date-form .form-group { flex: 1; margin-bottom: 0; }
+
+    .tournees-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .tournee-item {
+        background: #f7fafc;
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        border-left: 4px solid #667eea;
+    }
+
+    .tournee-header {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.375rem;
+    }
+
+    .tournee-id { font-weight: 700; color: #2d3748; }
+    .tournee-equipe { color: #667eea; font-weight: 500; }
+
+    .tournee-statut {
+        margin-left: auto;
+        background: #ebf4ff;
+        color: #2b6cb0;
+        padding: 0.125rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .tournee-details {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #718096;
+    }
+
+    .hint {
+        font-size: 0.875rem;
+        color: #a0aec0;
+        text-align: center;
+        padding: 1rem;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .controls-section { grid-template-columns: 1fr; }
+        .full-width { grid-column: 1; }
+    }
+</style>
