@@ -190,7 +190,7 @@ c'est possible grâce à la requête Défine dans **CommandeRepository**
 ## résultat attendue: 
 ![img_5.png](img_5.png)
 ## getNombreCommandesNonLivrées
-![img_7.png](img_7.png)
+![img_7.png](image12.png)
 ## résultat:
 ![img_8.png](img_8.png)
 
