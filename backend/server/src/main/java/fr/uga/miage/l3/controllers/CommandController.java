@@ -1,5 +1,6 @@
 package fr.uga.miage.l3.controllers;
 
+import fr.uga.miage.l3.endpoints.CommandEndpoints;
 import fr.uga.miage.l3.responses.CommandResponseDTO;
 import fr.uga.miage.l3.services.CommandeService;
 
@@ -12,16 +13,16 @@ import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-public class CommandController {
+public class CommandController implements CommandEndpoints {
 
     private final CommandeService commandeService;
 
-    @GetMapping("/non-livres")
+    @Override
     public Set<CommandResponseDTO> getAllCommandesNonLivres() {
         return commandeService.getAllCommandesNonLivres();
     }
 
-    @GetMapping("/nombre-non-livres")
+    @Override
     public Integer getNombreCommandesNonLivres() {
         return commandeService.getNombreCommandesNonLivres();
     }

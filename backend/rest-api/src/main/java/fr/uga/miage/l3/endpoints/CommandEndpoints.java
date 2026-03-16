@@ -24,7 +24,7 @@ public interface CommandEndpoints {
     @ApiResponse(responseCode = "200",description = "le nombre de comandes non livrées est trouvé ")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/non-livres/count")
-    int getNombreCommandesNonLivres();
+    public Integer getNombreCommandesNonLivres();
 
 
 }
