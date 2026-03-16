@@ -2,7 +2,7 @@
 [Lien Diagramme Uml](backend/Diagramme.jpeg)
 
 # Définition des Endpoints:<br>
-on a décidé définir 6 Endpoints prioritaires
+on a décidé de définir 6 Endpoints prioritaires
 
 ## getAllCommandesNonLivres: <br>
     Récupérer toutes les commandes avec le status NON_LIVREE ou ANNULLEE, 
@@ -10,7 +10,7 @@ on a décidé définir 6 Endpoints prioritaires
     créer des tournées avec
 
 ## getNombreDeCommandesNonLivrés
-    Récupérer le nombre de commandes avec le status NON_LIVREE
+    Récupérer le nombre de commandes avec le status NON_LIVREE ou ANNULEE
 
 ## getNombreEquipes
     Récupérer le nombre des équipes disponibles
@@ -19,15 +19,15 @@ on a décidé définir 6 Endpoints prioritaires
     Récupérer le nombre d'heures max définie
 
 ## createTournee
-    suite au calcule des tournées via les algorithme et validation du planificateur , 
-    les tournées validés doivent être stockés dans la base de donées via un Post 
+    suite au calcul des tournées via les algorithmes et validation du planificateur, 
+    les tournées validées doivent être stockées dans la base de données via un Post 
 
 ## getAllTournéesByDate
     Récupérer toutes les tournées d'une date spécifique 
 
 # Tester les Endopints
     pour tester les endpoints , un fichier data.sql a été généré qui contient des script SQL permettant d'enrichir la base 
-    de données avec des entités valide 
+    de données avec des entités valides
 ```sql
 -- =============================================
 -- ADRESSES
@@ -228,6 +228,13 @@ private int numeroEquipe;
 }
 ```
 ![img_9.png](img_9.png)
+
+## Résultat : 
+![img_11.png](img_11.png)
+
+
+
+
 
 
     

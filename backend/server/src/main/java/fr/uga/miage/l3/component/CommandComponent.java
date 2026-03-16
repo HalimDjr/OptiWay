@@ -23,7 +23,7 @@ public class CommandComponent {
     }
 
     public int getNombreCommandesNonLivrees(){
-        return commandeRepository.countByStatut(StatutCommande.NON_PLANIFIEE);
+        return commandeRepository.countByStatut(StatutCommande.NON_PLANIFIEE , StatutCommande.ANNULEE);
     }
 }
 

@@ -90,7 +90,7 @@ VALUES ('PROD-005', 'Canape 3 places', NULL);
 -- COMMANDES (statut en String car @Enumerated(EnumType.STRING))
 -- =============================================
 INSERT INTO commande_entity (numero_commande, date_limite, statut, poids, volume, adresse_id, tournee_id_tournee)
-VALUES ('CMD-001', '2026-03-15', 'LIVREE', 25.5, 0.8, 1, NULL);
+VALUES ('CMD-001', '2026-03-15', 'ANNULEE', 25.5, 0.8, 1, NULL);
 
 INSERT INTO commande_entity (numero_commande, date_limite, statut, poids, volume, adresse_id, tournee_id_tournee)
 VALUES ('CMD-002', '2026-03-15', 'LIVREE', 60.0, 1.2, 2, NULL);
