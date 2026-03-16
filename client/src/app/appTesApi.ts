@@ -15,9 +15,9 @@ import { firstValueFrom } from 'rxjs';
 const lastOptimizationResponseKey = "lastOptimizationResponse";
 
 @Component({
-    selector: 'app-root',
+    selector: 'app-root-test',
     imports: [FormsModule, LeafletModule, CommonModule],
-    templateUrl: './app.html',
+    templateUrl: './appTesApi.html',
     styleUrl: './app.scss'
 })
 export class App {
