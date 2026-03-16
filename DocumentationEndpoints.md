@@ -230,7 +230,7 @@ private int numeroEquipe;
 ![img_9.png](img_9.png)
 
 ## Résultat : 
-![img_11.png](img_11.png)
+![img_11.png](img_11.png);
 
 
 
