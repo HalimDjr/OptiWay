@@ -165,9 +165,69 @@ suite à l'injection du SQL , on démarre notre server sur swagger<br>
 **sur une machine virtuelle**<br>
 *http:://IP_MACHINE-VIRTUELLE:8080/swagger-ui/index.html*
 
+**Rendu Swagger**
+![img.png](img.png)
+
+# TestEndointsEquipe
+## getNombreEquipes
+![img_1.png](img_1.png)
+## résultat:
+![img_2.png](img_2.png)
+## getHeuresMax
+![img_3.png](img_3.png)
+## résultat
+![img_6.png](img_6.png) <br>
+
+# TestEndpointsCommandes
+## getToutesLesCommandesNonLivrées
+cette endopint nous permet de récupérer toutes les commandes avec le status NON_PLANIFIEE ou ANNULEE,
+c'est possible grâce à la requête Défine dans **CommandeRepository**
+```java
+    @Query("SELECT c FROM CommandeEntity c WHERE c.statut = 'NON_PLANIFIEE' OR c.statut = 'ANNULEE'")
+    Set<CommandeEntity> getNonPlanifieesOuAnnulees();
+```
+![img_4.png](img_4.png)
+## résultat attendue: 
+![img_5.png](img_5.png)
+## getNombreCommandesNonLivrées
+![img_7.png](img_7.png)
+## résultat:
+![img_8.png](img_8.png)
+
+# TestEndopintsTournee
+## PostTournee:Création Tournée
+pour la création d'une tournée le client devra un JSON sous le format de **TourneeRequestDTO** 
+```java
+package fr.uga.miage.l3.responses;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
+
+@Data
+@Schema(description = "DTO représentant une tournée de livraison")
+public class TourneeResponseDTO
+{
+@Schema(description = "id de la tournée ")
+private int idTournee;
+@Schema(description = "Temps total estimé de la tournée", example = "125.5")
+private double tempsTotal;
+@Schema(description = "Date de la tournée", example = "2025-04-15")
+private Date dateTournee;
+@Schema(description = "Heure de départ de la tournée", example = "08:30:00")
+private Timestamp heureDepart;
+@Schema(description = "Distance totale parcourue pendant la tournée en kilomètres", example = "42.7")
+private double distanceTotale;
+
+@Schema(description = "Numéro de l'équipe responsable de la tournée", example = "3")
+private int numeroEquipe;
+}
+```
+![img_9.png](img_9.png)
 
 
     
