@@ -20,14 +20,16 @@ public class CommandeEntity {
     private double poids;
     private double volume;
 
-
+//ENLEVER CELUIS LA
     //OK AVEC ADRESSE
+
     @ManyToOne
+    @JoinColumn(name = "adresse_id", referencedColumnName = "id")
     private AdresseEntity adresse;
 
 
     //OK COMMANDE PRODUIT
-    @OneToMany
+    @OneToMany //MAPPEDBY
     @JoinColumn(name="commande_id",referencedColumnName = "numeroCommande")
     private Set<ProduitEntity> produits;
 

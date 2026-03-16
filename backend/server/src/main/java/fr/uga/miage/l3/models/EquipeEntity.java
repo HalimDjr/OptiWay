@@ -1,9 +1,6 @@
 package fr.uga.miage.l3.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,15 +21,16 @@ public class EquipeEntity {
     private TourneeEntity tournee;
 
     //OK EQUIPE CONDUCTEURr
-    @OneToOne(mappedBy ="equipe")
+    @OneToOne
     private LivreurEntity conducteur ;
 
     //OK EQUIPE
     @OneToMany
+    @JoinColumn(name ="id_livreur", referencedColumnName = "idLivreur")
     private Set<LivreurEntity> manutentionnaires;
 
-    //OK VEHICULE TOURNEE
-    @OneToOne(mappedBy = "equipe")
+
+    @OneToOne
     private VehiculeEntity vehicule;
 }
 

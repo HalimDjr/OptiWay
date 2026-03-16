@@ -12,6 +12,6 @@ public class VehiculeEntity {
     private double capaciteVolumeMax;
 
     //OK VEHICULE TOURNEEe
-    @OneToOne
+    @OneToOne(mappedBy = "vehicule")
     private EquipeEntity equipe;
 }

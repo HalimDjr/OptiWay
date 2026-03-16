@@ -55,7 +55,7 @@ class EntityRelationTest {
      * Vérifie la structure complète de AdresseEntity :
      * - Clé primaire : id (@Id)
      * - Attributs : numeroRue (int), rue (String), ville (String),
-     *               codePostal (int), pays (String), latitude (double), longitude (double)
+     * codePostal (int), pays (String), latitude (double), longitude (double)
      * - Relation : commandes -> @OneToMany + @JoinColumn (1 Adresse possède 0..* Commandes)
      */
     @Test
@@ -87,9 +87,9 @@ class EntityRelationTest {
      * - Clé primaire : numeroCommande (String, @Id)
      * - Attributs : dateLimit, statut (StatutCommande), poids (double), volum (double)
      * - Relations :
-     *     adresse    -> @ManyToOne  (0..* Commandes pour 1 Adresse)
-     *     tournee    -> @ManyToOne  (1..* Commandes dans 0..1 Tournée)
-     *     produits   -> @OneToMany  (une commande est composée de 1..* Produits)
+     * adresse    -> @ManyToOne  (0..* Commandes pour 1 Adresse)
+     * tournee    -> @ManyToOne  (1..* Commandes dans 0..1 Tournée)
+     * produits   -> @OneToMany  (une commande est composée de 1..* Produits)
      */
     @Test
     void testCommandeEntity() throws Exception {
@@ -123,8 +123,8 @@ class EntityRelationTest {
      * - Clé primaire : idLivreur (@Id)
      * - Attributs : nom (String), prenom (String), telephone (String), permis (boolean)
      * - Relations :
-     *     conducteur      -> @OneToOne   (1 Livreur est conducteur de 0..1 Equipe)
-     *     manutentionnaire -> @ManyToOne (0..2 Livreurs sont aides dans 0..1 Equipe)
+     * conducteur      -> @OneToOne   (1 Livreur est conducteur de 0..1 Equipe)
+     * manutentionnaire -> @ManyToOne (0..2 Livreurs sont aides dans 0..1 Equipe)
      */
     @Test
     void testLivreurEntity() throws Exception {
@@ -154,9 +154,9 @@ class EntityRelationTest {
      * - Clé primaire : numeroEquipe (int, @Id)
      * - Attributs : nbHeuresMax (double)
      * - Relations :
-     *     conducteur    -> @OneToOne  (1 Equipe a 1 conducteur Livreur)
-     *     livreurs      -> @OneToMany (1 Equipe a 0..2 aides-livreurs)
-     *     tournee       -> @OneToOne  (1 Equipe effectue 0..1 Tournée)
+     * conducteur    -> @OneToOne  (1 Equipe a 1 conducteur Livreur)
+     * livreurs      -> @OneToMany (1 Equipe a 0..2 aides-livreurs)
+     * tournee       -> @OneToOne  (1 Equipe effectue 0..1 Tournée)
      */
     @Test
     void testEquipeEntity() throws Exception {
@@ -188,11 +188,11 @@ class EntityRelationTest {
      * Vérifie la structure complète de TourneeEntity :
      * - Clé primaire : idTournee (int, @Id)
      * - Attributs : dateTournee (Date), heureDepart (Timestamp),
-     *               statut (StatutTournee), distanceTotale (double), tempsTotal (double)
+     * statut (StatutTournee), distanceTotale (double), tempsTotal (double)
      * - Relations :
-     *     commandes -> @OneToMany  (1 Tournée distribue 1..* Commandes)
-     *     vehicule  -> @OneToOne   (0..1 Tournée utilise 1 Véhicule)
-     *     equipe    -> @OneToOne   (0..1 Tournée effectuée par 1 Equipe)
+     * commandes -> @OneToMany  (1 Tournée distribue 1..* Commandes)
+     * vehicule  -> @OneToOne   (0..1 Tournée utilise 1 Véhicule)
+     * equipe    -> @OneToOne   (0..1 Tournée effectuée par 1 Equipe)
      */
     @Test
     void testTourneeEntity() throws Exception {
@@ -225,7 +225,7 @@ class EntityRelationTest {
      * - Clé primaire : matricule (String, @Id)
      * - Attributs : capacitePoidsMax (double), capaciteVolumeMax (double)
      * - Relations :
-     *     tournee -> @OneToOne (1 Véhicule est affecté à 0..1 Tournée)
+     * tournee -> @OneToOne (1 Véhicule est affecté à 0..1 Tournée)
      */
     @Test
     void testVehiculeEntity() throws Exception {
@@ -250,7 +250,7 @@ class EntityRelationTest {
      * - Clé primaire : reference (String, @Id)
      * - Attributs : nom (String), poids (double)
      * - Relations :
-     *     commande -> @ManyToOne (1..* Produits appartiennent à 0..1 Commande)
+     * commande -> @ManyToOne (1..* Produits appartiennent à 0..1 Commande)
      */
     @Test
     void testProduitEntity() throws Exception {
@@ -263,4 +263,44 @@ class EntityRelationTest {
 
         //EntityTestUtils.assertAnnotationPresent(ProduitEntity.class, "commande", ManyToOne.class);
     }
+
+    // =========================================================================
+    // SolutionEntity
+    // =========================================================================
+
+    @Test
+    void testSolutionEntity() throws Exception {
+        // --- Clé primaire ---
+        EntityTestUtils.assertAnnotationPresent(SolutionEntity.class, "id", Id.class);
+
+        // --- Attributs et types ---
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "nomAlgorithme", String.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "date", Date.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "activee", boolean.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "nbCommandesLivrees", int.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "tempsTotal", double.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "coutTotal", double.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "distanceTotale", double.class);
+        EntityTestUtils.assertFieldType(SolutionEntity.class, "nbEquipesUtilisees", int.class);
+
+        EntityTestUtils.assertAnnotationPresent(SolutionEntity.class, "tournees", OneToMany.class);
+
+        //EntityTestUtils.assertAnnotationPresent(ProduitEntity.class, "commande", ManyToOne.class);
+    }
+
+    // =========================================================================
+    // EntrepotEntity
+    // =========================================================================
+
+
+    @Test
+    void testEntrepotEntity() throws Exception {
+        // --- Clé primaire ---
+        EntityTestUtils.assertAnnotationPresent(EntrepotEntity.class, "id", Id.class);
+
+        // --- Attributs et types ---
+        EntityTestUtils.assertFieldType(EntrepotEntity.class, "nom", String.class);
+
+    }
+
 }

@@ -22,12 +22,12 @@ public class TourneeEntity {
     private double tempsTotal;
     @Enumerated(EnumType.STRING)
     private StatutTournee statut;
-    private Date dateTournee;
     private Timestamp heureDepart;
     private double distanceTotale;
 
     //OK TOURNEE COMMANDESs
     @OneToMany
+    @JoinColumn(name = "id_commande" , referencedColumnName = "numeroCommande")
     private Set<CommandeEntity> commandes;
 
 

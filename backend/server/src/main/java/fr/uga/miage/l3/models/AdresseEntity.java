@@ -20,7 +20,5 @@ public class AdresseEntity  {
     private double latitude;
     private double longitude;
 
-    @OneToMany
-    @JoinColumn(name = "adresse_id", referencedColumnName = "id")
-    private Set<CommandeEntity> commandes;
+
 }
