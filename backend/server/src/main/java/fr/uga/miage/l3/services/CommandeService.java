@@ -31,7 +31,7 @@ public class CommandeService {
     }
 
     public Integer getNombreCommandesNonLivres(){
-        return commandComponent.getNombreCommandesNonLivrees() ;
+        return getAllCommandesNonLivres().size() ;
     }
 
     /**
