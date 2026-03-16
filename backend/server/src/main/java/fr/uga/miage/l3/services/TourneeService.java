@@ -36,7 +36,6 @@ public class TourneeService {
 
     /**
      * @description
-     *
      * cette méthode prend un objet de TourneeRequest le transfome en TourneeEntity et le stock
      * dans la base de données
      * les deux attribut Set<CommandeEntity> commandes et Equipe equipe de TourneeEntity sont assignées manuellement car
@@ -82,6 +81,19 @@ public class TourneeService {
      * @return : un objet de type Set<CommandEntity> qui est la listes des commandes relatives aux ids des commandes dans commande_ids >
      * */
 
+    public List<TourneeResponseDTO> getTourneesByDate(LocalDate date) {
+        System.out.println("Récupération des tournées pour la date:"+ date);
+
+        List<TourneeEntity> tournees = tourneeComponent.getTourneesByDate(date);
+
+        return tournees.stream()
+                .map(tourneeMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
+
     private Set<CommandeEntity> commandeRelativeTournee(TourneeRequest tourneeRequest){
         Set<CommandeEntity> commandesSet= new HashSet<>();
         Iterator<String> commandesAAjouterIdsIterator=tourneeRequest.getCommandes_ids().iterator();
@@ -97,8 +109,12 @@ public class TourneeService {
 
     }
 
+
+
+
+
     /**
-     * @param numeroEquipe :le numéro de l'quipe pour laquelle on veut récupérer l'ntity
+     * @param numeroEquipe :le numéro de l'quipe pour laquelle on veut récupérer l'entity
      * @return :l'entité correspendate aux paramétre numeroEquipe
      */
 
@@ -108,15 +124,8 @@ public class TourneeService {
         System.out.println("nbHeuresMax: " +equipe.getNbHeuresMax());
         return equipe;
     }
-    public List<TourneeResponseDTO> getTourneesByDate(LocalDate date) {
-        System.out.println("Récupération des tournées pour la date:"+ date);
 
-        List<TourneeEntity> tournees = tourneeComponent.getTourneesByDate(date);
 
-        return tournees.stream()
-                .map(tourneeMapper::toResponse)
-                .collect(Collectors.toList());
-    }
 
 
 
