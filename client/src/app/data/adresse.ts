@@ -4,4 +4,5 @@ export interface Adresse {
     name?: string;
     postCode?: string;
     city?: string;
+    numeroCommande?: string;
 }

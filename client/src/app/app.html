@@ -1,519 +1,434 @@
 <div class="container">
-  <header class="page-header">
-    <h1>optimization des tournées</h1>
-  </header>
+    <header class="page-header">
+        <h1>Optimisation des tournées</h1>
+    </header>
 
-  <div class="map-container">
-    <div class="map-wrapper"
-         leaflet 
-         [leafletOptions]="options"
-         [leafletLayers]="layers()">
-    </div>
-  </div>
-
-  <div class="controls-section">
-    <!-- Sélection du dataset -->
-    <div class="control-card dataset-card">
-      <div class="card-header">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
-          <path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4"></path>
-        </svg>
-        <h2>Jeux de données</h2>
-      </div>
-      <div class="dataset-grid">
-        <button 
-          (click)="changeDataSet(1)" 
-          class="btn-dataset btn-dataset-1">
-          <div class="dataset-icon">50</div>
-          <div class="dataset-label">points</div>
-        </button>
-
-        <button 
-          (click)="changeDataSet(2)" 
-          class="btn-dataset btn-dataset-2">
-          <div class="dataset-icon">100</div>
-          <div class="dataset-label">points</div>
-        </button>
-
-        <button 
-          (click)="changeDataSet(3)" 
-          class="btn-dataset btn-dataset-3">
-          <div class="dataset-icon">200</div>
-          <div class="dataset-label">points</div>
-        </button>
-
-        <button 
-          (click)="changeDataSet(4)" 
-          class="btn-dataset btn-dataset-4">
-          <div class="dataset-icon">400</div>
-          <div class="dataset-label">points</div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Paramètres d'optimisation -->
-    <div class="control-card params-card">
-      <div class="card-header">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
-        </svg>
-        <h2>Paramètres</h2>
-      </div>
-      <div class="control-form">
-        <div class="form-group">
-          <label for="numberOfVehicles">Nombre de véhicules</label>
-          <input 
-            #nbVehicules 
-            id="numberOfVehicles"
-            name="numberOfVehicles" 
-            type="number" 
-            min="1" 
-            max="30" 
-            placeholder="Max: 30" 
-            value="10" 
-            class="form-input" />
+    <!-- Chargement initial -->
+    @if (isLoading()) {
+        <div class="loading-banner">
+            <div class="spinner"></div>
+            <span>{{ loadingMessage() }}</span>
         </div>
-        <div class="form-group">
-          <label for="maxTime">Temps max par véhicule (s)</label>
-          <input 
-            #maxTime 
-            id="maxTime"
-            name="maxTime" 
-            type="number" 
-            min="1" 
-            placeholder="Ex: 10000" 
-            value="10000" 
-            class="form-input" />
+    }
+
+    <div class="map-container">
+        <div class="map-wrapper"
+             leaflet
+             [leafletOptions]="options"
+             [leafletLayers]="layers()">
         </div>
-      </div>
     </div>
 
-    <!-- Méthodes d'optimisation -->
-    <div class="control-card optimization-methods">
-      <div class="card-header">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-        </svg>
-        <h2>Méthodes d'optimisation</h2>
-      </div>
-      <div class="optimization-grid">
-        <!-- Optimisation équitable -->
-        <button 
-          (click)="optimizeRoutesEquitable(nbVehicules.valueAsNumber, maxTime.valueAsNumber)" 
-          class="btn-optimize btn-equitable">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-            <path d="M6 1v4M10 1v4M14 1v4"></path>
-          </svg>
-          <div class="btn-content">
-            <span class="btn-title">Optimisation équitable</span>
-            <span class="btn-subtitle">Distribution équilibrée</span>
-          </div>
-        </button>
+    <div class="controls-section">
 
-        <!-- Optimisation balayeuse -->
-        <button 
-          (click)="optimizationSweeper(nbVehicules.valueAsNumber, maxTime.valueAsNumber)" 
-          class="btn-optimize btn-sweep">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.5"></path>
-            <polyline points="16 2 22 8 16 8"></polyline>
-            <line x1="10" y1="14" x2="21" y2="14"></line>
-            <line x1="10" y1="18" x2="18" y2="18"></line>
-          </svg>
-          <div class="btn-content">
-            <span class="btn-title">Optimisation balayeuse</span>
-            <span class="btn-subtitle">Minimiser nb tournées</span>
-          </div>
-        </button>
+        <!-- Paramètres -->
+        <div class="control-card params-card">
+            <div class="card-header">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                </svg>
+                <h2>Paramètres</h2>
+            </div>
+            <div class="control-form">
+                <div class="form-group">
+                    <label for="numberOfVehicles">
+                        Nombre de véhicules
+                        <span class="label-max">(max : {{ nombreEquipesMax() }})</span>
+                    </label>
+                    <input
+                        #nbVehicules
+                        id="numberOfVehicles"
+                        type="number"
+                        min="1"
+                        [max]="nombreEquipesMax()"
+                        [value]="nombreEquipesMax()"
+                        class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="maxTime">
+                        Temps max par véhicule (s)
+                        <span class="label-max">(max : {{ heuresMaxParEquipe() * 3600 }})</span>
+                    </label>
+                    <input
+                        #maxTime
+                        id="maxTime"
+                        type="number"
+                        min="1"
+                        [max]="heuresMaxParEquipe() * 3600"
+                        [value]="heuresMaxParEquipe() * 3600"
+                        class="form-input" />
+                </div>
+            </div>
+        </div>
 
-        <!-- Optimisation temps -->
-        <button 
-          (click)="optimizeRoutesCluster(nbVehicules.valueAsNumber, maxTime.valueAsNumber)" 
-          class="btn-optimize btn-time">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <div class="btn-content">
-            <span class="btn-title">Optimisation clusters</span>
-            <span class="btn-subtitle">Minimiser la durée</span>
-          </div>
-        </button>
-      </div>
+        <!-- Méthodes d'optimisation -->
+        <div class="control-card optimization-methods">
+            <div class="card-header">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                <h2>Méthodes d'optimisation</h2>
+            </div>
+            <div class="optimization-grid">
+
+                <button
+                        (click)="optimizeRoutesEquitable(nbVehicules.valueAsNumber, maxTime.valueAsNumber)"
+                        class="btn-optimize btn-equitable"
+                        [disabled]="isLoading()">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <path d="M6 1v4M10 1v4M14 1v4"></path>
+                    </svg>
+                    <div class="btn-content">
+                        <span class="btn-title">Optimisation équitable</span>
+                        <span class="btn-subtitle">Distribution équilibrée</span>
+                    </div>
+                </button>
+
+                <button
+                        (click)="optimizationSweeper(nbVehicules.valueAsNumber, maxTime.valueAsNumber)"
+                        class="btn-optimize btn-sweep"
+                        [disabled]="isLoading()">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.5"></path>
+                        <polyline points="16 2 22 8 16 8"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="14"></line>
+                        <line x1="10" y1="18" x2="18" y2="18"></line>
+                    </svg>
+                    <div class="btn-content">
+                        <span class="btn-title">Optimisation balayeuse</span>
+                        <span class="btn-subtitle">Minimiser nb tournées</span>
+                    </div>
+                </button>
+
+                <button
+                        (click)="optimizeRoutesCluster(nbVehicules.valueAsNumber, maxTime.valueAsNumber)"
+                        class="btn-optimize btn-time"
+                        [disabled]="isLoading()">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <div class="btn-content">
+                        <span class="btn-title">Optimisation clusters</span>
+                        <span class="btn-subtitle">Minimiser la durée</span>
+                    </div>
+                </button>
+
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- ===================== COMPARAISON DES SOLUTIONS ===================== -->
+    @if (solutionEquitable() || solutionSweep() || solutionCluster()) {
+        <div class="solutions-section">
+
+            <div class="solutions-header">
+                <h2 class="solutions-title">Comparer les solutions</h2>
+                <span class="solutions-subtitle">
+                    Consultez les détails · Validez la meilleure solution
+                </span>
+            </div>
+
+            <div class="solutions-grid">
+
+                <!-- SOLUTION ÉQUITABLE -->
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'EQUITABLE'">
+                    <div class="solution-card-header">
+                        <div class="solution-title-row">
+                            <span class="solution-name">Équitable</span>
+                            <div class="solution-badges">
+                                <span class="badge badge-equitable">Distribution</span>
+                                @if (meilleureSolution() === 'EQUITABLE') {
+                                    <span class="badge badge-best">Meilleure</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!solutionEquitable()) {
+                        <div class="solution-loading">
+                            <div class="spinner"></div>
+                            <span>Optimisation en cours...</span>
+                        </div>
+                    } @else {
+                        <div class="algo-icon-container" (click)="ouvrirModal(solutionEquitable())">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                                <path d="M6 1v4M10 1v4M14 1v4"></path>
+                            </svg>
+                            <span class="algo-icon-label">Distribution équilibrée · Voir détails</span>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <span class="metric-label">Tournées</span>
+                                <span class="metric-value">{{ solutionEquitable().tournees?.length ?? 0 }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Commandes</span>
+                                <span class="metric-value">{{ solutionEquitable().nbCommandesLivrees }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Durée totale</span>
+                                <span class="metric-value">
+                                    {{ (solutionEquitable().tempsTotal / 60) | number:'1.0-0' }}
+                                    <span class="metric-unit">min</span>
+                                </span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Distance</span>
+                                <span class="metric-value">
+                                    {{ solutionEquitable().distanceTotale | number:'1.0-0' }}
+                                    <span class="metric-unit">km</span>
+                                </span>
+                            </div>
+                            <div class="metric-card metric-full">
+                                <span class="metric-label">Coût carburant estimé</span>
+                                <span class="metric-value metric-cout">
+                                    {{ calculerCout(solutionEquitable().distanceTotale) | number:'1.2-2' }}
+                                    <span class="metric-unit">€</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="btn-valider"
+                                [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
+                                (click)="validerSolution(solutionEquitable().id)">
+                            Valider cette solution
+                        </button>
+                    }
+                </div>
+
+                <!-- SOLUTION SWEEP -->
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'SWEEP'">
+                    <div class="solution-card-header">
+                        <div class="solution-title-row">
+                            <span class="solution-name">Balayeuse</span>
+                            <div class="solution-badges">
+                                <span class="badge badge-sweep">Sweep</span>
+                                @if (meilleureSolution() === 'SWEEP') {
+                                    <span class="badge badge-best">Meilleure</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!solutionSweep()) {
+                        <div class="solution-loading">
+                            <div class="spinner"></div>
+                            <span>Optimisation en cours...</span>
+                        </div>
+                    } @else {
+                        <div class="algo-icon-container" (click)="ouvrirModal(solutionSweep())">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
+                                <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.5"></path>
+                                <polyline points="16 2 22 8 16 8"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="14"></line>
+                                <line x1="10" y1="18" x2="18" y2="18"></line>
+                            </svg>
+                            <span class="algo-icon-label">Minimiser nb tournées · Voir détails</span>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <span class="metric-label">Tournées</span>
+                                <span class="metric-value">{{ solutionSweep().tournees?.length ?? 0 }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Commandes</span>
+                                <span class="metric-value">{{ solutionSweep().nbCommandesLivrees }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Durée totale</span>
+                                <span class="metric-value">
+                                    {{ (solutionSweep().tempsTotal / 60) | number:'1.0-0' }}
+                                    <span class="metric-unit">min</span>
+                                </span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Distance</span>
+                                <span class="metric-value">
+                                    {{ solutionSweep().distanceTotale | number:'1.0-0' }}
+                                    <span class="metric-unit">km</span>
+                                </span>
+                            </div>
+                            <div class="metric-card metric-full">
+                                <span class="metric-label">Coût carburant estimé</span>
+                                <span class="metric-value metric-cout">
+                                    {{ calculerCout(solutionSweep().distanceTotale) | number:'1.2-2' }}
+                                    <span class="metric-unit">€</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="btn-valider"
+                                [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
+                                (click)="validerSolution(solutionSweep().id)">
+                            Valider cette solution
+                        </button>
+                    }
+                </div>
+
+                <!-- SOLUTION CLUSTER -->
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'CLUSTER'">
+                    <div class="solution-card-header">
+                        <div class="solution-title-row">
+                            <span class="solution-name">Clusters</span>
+                            <div class="solution-badges">
+                                <span class="badge badge-cluster">Durée min</span>
+                                @if (meilleureSolution() === 'CLUSTER') {
+                                    <span class="badge badge-best">Meilleure</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!solutionCluster()) {
+                        <div class="solution-loading">
+                            <div class="spinner"></div>
+                            <span>Optimisation en cours...</span>
+                        </div>
+                    } @else {
+                        <div class="algo-icon-container" (click)="ouvrirModal(solutionCluster())">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span class="algo-icon-label">Minimiser la durée · Voir détails</span>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <span class="metric-label">Tournées</span>
+                                <span class="metric-value">{{ solutionCluster().tournees?.length ?? 0 }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Commandes</span>
+                                <span class="metric-value">{{ solutionCluster().nbCommandesLivrees }}</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Durée totale</span>
+                                <span class="metric-value">
+                                    {{ (solutionCluster().tempsTotal / 60) | number:'1.0-0' }}
+                                    <span class="metric-unit">min</span>
+                                </span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Distance</span>
+                                <span class="metric-value">
+                                    {{ solutionCluster().distanceTotale | number:'1.0-0' }}
+                                    <span class="metric-unit">km</span>
+                                </span>
+                            </div>
+                            <div class="metric-card metric-full">
+                                <span class="metric-label">Coût carburant estimé</span>
+                                <span class="metric-value metric-cout">
+                                    {{ calculerCout(solutionCluster().distanceTotale) | number:'1.2-2' }}
+                                    <span class="metric-unit">€</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="btn-valider"
+                                [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
+                                (click)="validerSolution(solutionCluster().id)">
+                            Valider cette solution
+                        </button>
+                    }
+                </div>
+
+            </div>
+        </div>
+    }
+
+    <!-- ===================== MODAL CARTE AGRANDIE ===================== -->
+    @if (modalOuvert()) {
+        <div class="modal-backdrop">
+            <div class="modal-container">
+
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        Tournées — {{ solutionModal()?.nomAlgorithme }}
+                    </h3>
+                    <button class="modal-close" (click)="fermerModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Fermer
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- Carte grande -->
+                    <div class="modal-map"
+                         leaflet
+                         [leafletOptions]="options"
+                         [leafletLayers]="layersModal()">
+                    </div>
+
+                    <!-- Liste des tournées -->
+                    <div class="modal-sidebar">
+                        <p class="sidebar-title">Tournées de cette solution</p>
+
+                        @if (solutionModal()?.tournees?.length) {
+                            <div class="tournee-list">
+                                @for (tournee of solutionModal().tournees; track tournee.idTournee) {
+                                    <div class="tournee-item">
+                                        <div class="tournee-header">
+                                            <span class="tournee-id">#{{ tournee.idTournee }}</span>
+                                            <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
+                                        </div>
+                                        <div class="tournee-stats">
+                                            <span>{{ (tournee.tempsTotal / 60) | number:'1.0-0' }} min</span>
+                                            <span>·</span>
+                                            <span>{{ tournee.distanceTotale | number:'1.0-0' }} km</span>
+                                            <span>·</span>
+                                            <span>{{ tournee.commandes?.length ?? 0 }} commandes</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        } @else {
+                            <p class="sidebar-empty">Aucune tournée disponible</p>
+                        }
+
+                        <!-- Récap -->
+                        <div class="sidebar-recap">
+                            <div class="recap-row">
+                                <span>Total commandes</span>
+                                <span>{{ solutionModal()?.nbCommandesLivrees }}</span>
+                            </div>
+                            <div class="recap-row">
+                                <span>Durée totale</span>
+                                <span>{{ (solutionModal()?.tempsTotal / 60) | number:'1.0-0' }} min</span>
+                            </div>
+                            <div class="recap-row">
+                                <span>Coût carburant</span>
+                                <span>{{ calculerCout(solutionModal()?.distanceTotale) | number:'1.2-2' }} €</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-voir-carte"
+                                (click)="afficherSolutionSurCarte(solutionModal())">
+                            Voir sur la carte principale
+                        </button>
+
+                        <button class="btn-valider-modal"
+                                (click)="validerSolution(solutionModal().id); fermerModal()">
+                            Valider cette solution
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
 </div>
-
-<style>
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  }
-
-  .page-header {
-    margin-bottom: 2rem;
-  }
-
-  .page-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .map-container {
-    margin-bottom: 2rem;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  .map-wrapper {
-    height: 600px;
-    background: #f7fafc;
-  }
-
-  .controls-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-  }
-
-  .control-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .control-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.12);
-  }
-
-  .optimization-methods {
-    grid-column: 1 / -1;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.875rem;
-    border-bottom: 2px solid #e2e8f0;
-  }
-
-  .card-header h2 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 0;
-  }
-
-  .icon {
-    width: 22px;
-    height: 22px;
-    color: #667eea;
-  }
-
-  .control-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-group label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #4a5568;
-  }
-
-  .form-input {
-    padding: 0.625rem 0.875rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 0.938rem;
-    transition: all 0.2s;
-    background: white;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-
-  .form-input:hover {
-    border-color: #cbd5e0;
-  }
-
-  /* Grille des datasets */
-  .dataset-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.625rem;
-  }
-
-  .btn-dataset {
-    padding: 0.875rem 0.5rem;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    background: white;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-dataset::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0.1;
-    transition: opacity 0.3s;
-  }
-
-  .btn-dataset:hover::before {
-    opacity: 0.15;
-  }
-
-  .btn-dataset:hover {
-    transform: translateY(-2px) scale(1.02);
-    border-color: currentColor;
-  }
-
-  .btn-dataset:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  .dataset-icon {
-    font-size: 1.75rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .dataset-label {
-    font-size: 0.813rem;
-    font-weight: 500;
-    opacity: 0.8;
-  }
-
-  /* Couleurs spécifiques par dataset */
-  .btn-dataset-1 {
-    color: #667eea;
-    border-color: rgba(102, 126, 234, 0.2);
-  }
-
-  .btn-dataset-1::before {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .btn-dataset-1:hover {
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  }
-
-  .btn-dataset-2 {
-    color: #f5576c;
-    border-color: rgba(245, 87, 108, 0.2);
-  }
-
-  .btn-dataset-2::before {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-
-  .btn-dataset-2:hover {
-    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
-  }
-
-  .btn-dataset-3 {
-    color: #38f9d7;
-    border-color: rgba(56, 249, 215, 0.2);
-  }
-
-  .btn-dataset-3::before {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  }
-
-  .btn-dataset-3:hover {
-    box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
-  }
-
-  .btn-dataset-4 {
-    color: #fa709a;
-    border-color: rgba(250, 112, 154, 0.2);
-  }
-
-  .btn-dataset-4::before {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  }
-
-  .btn-dataset-4:hover {
-    box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
-  }
-
-  /* Grille des méthodes d'optimisation */
-  .optimization-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-  }
-
-  .btn-optimize {
-    padding: 1.125rem 1.25rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-optimize::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .btn-optimize:hover::before {
-    opacity: 1;
-  }
-
-  .btn-optimize .btn-icon {
-    width: 26px;
-    height: 26px;
-    flex-shrink: 0;
-  }
-
-  .btn-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .btn-title {
-    font-size: 0.938rem;
-    font-weight: 600;
-    display: block;
-  }
-
-  .btn-subtitle {
-    font-size: 0.75rem;
-    opacity: 0.9;
-    display: block;
-  }
-
-  /* Styles spécifiques par méthode */
-  .btn-equitable {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-  }
-
-  .btn-equitable:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-  }
-
-  .btn-sweep {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    color: white;
-  }
-
-  .btn-sweep:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
-  }
-
-  .btn-time {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: white;
-  }
-
-  .btn-time:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
-  }
-
-  .btn-optimize:active {
-    transform: translateY(0);
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    .controls-section {
-      grid-template-columns: 1fr;
-    }
-
-    .optimization-methods {
-      grid-column: 1;
-    }
-
-    .optimization-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
-
-    .page-header h1 {
-      font-size: 1.5rem;
-    }
-
-    .map-wrapper {
-      height: 400px;
-    }
-
-    .dataset-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1200px) {
-    .map-wrapper {
-      height: 650px;
-    }
-  }
-
-  @media (min-width: 640px) and (max-width: 900px) {
-    .dataset-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-</style>

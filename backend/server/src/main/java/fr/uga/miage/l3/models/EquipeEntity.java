@@ -16,9 +16,8 @@ public class EquipeEntity {
     private int numeroEquipe;
     private double nbHeuresMax;
 
-    //OK EQUIPE TOURNEE
-    @OneToOne(mappedBy = "equipe")
-    private TourneeEntity tournee;
+    @OneToMany(mappedBy = "equipe")
+    private Set<TourneeEntity> tournees;
 
     //OK EQUIPE CONDUCTEURr
     @OneToOne

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Set;
 
 
 @Data
@@ -25,4 +26,6 @@ private double distanceTotale;
 
 @Schema(description = "Numéro de l'équipe responsable de la tournée", example = "3")
 private int numeroEquipe;
+
+private Set<CommandeCoordDTO> commandes;
 }

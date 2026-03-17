@@ -26,12 +26,14 @@ public class TourneeEntity {
     private double distanceTotale;
 
     //OK TOURNEE COMMANDESs
-    @OneToMany(mappedBy = "tournee")
+    @ManyToMany
+    @JoinTable(
+            name = "tournee_commande",
+            joinColumns = @JoinColumn(name = "tournee_id"),
+            inverseJoinColumns = @JoinColumn(name = "commande_id")
+    )
     private Set<CommandeEntity> commandes;
 
-
-
-    //OK EQUIPE TOURNEE
-    @OneToOne
+    @ManyToOne  // ← au lieu de @OneToOne
     private EquipeEntity equipe;
 }

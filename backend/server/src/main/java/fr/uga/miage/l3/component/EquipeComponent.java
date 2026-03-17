@@ -7,6 +7,8 @@ import fr.uga.miage.l3.repository.EquipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /// ////
 @Component
 @RequiredArgsConstructor
@@ -28,5 +30,8 @@ public class EquipeComponent {
             throw new NotFoundEquipeResetException("Aucune équipe trouvée");
         }
         return equipe.getNbHeuresMax();
+    }
+    public List<EquipeEntity> getAllEquipes() {
+        return equipeRepository.findAll();
     }
 }

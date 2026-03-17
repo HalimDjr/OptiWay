@@ -34,8 +34,8 @@ public class CommandeEntity {
 
 
     //OK COMMANDE TOURNEE
-    @ManyToOne
-    private TourneeEntity tournee;
+    @ManyToMany(mappedBy = "commandes")
+    private Set<TourneeEntity> tournees;
 
 
 

@@ -6,7 +6,6 @@ import { Adresse } from '../data/adresse';  // ← ajouter
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-
     private apiUrl = 'http://localhost:8080/api';
 
     constructor(private http: HttpClient) {}
@@ -16,16 +15,13 @@ export class ApiService {
         return this.http.get<any[]>(`${this.apiUrl}/commands/non-livres`);
     }
 
-    getNombreCommandesNonLivrees(): Observable<number> {
-        return this.http.get<number>(`${this.apiUrl}/commands/non-livres/count`);
-    }
-
     getAdressesCommandes(): Observable<Adresse[]> {
         return this.http.get<any[]>(`${this.apiUrl}/commands/non-livres`).pipe(
             map(commandes => commandes.map(cmd => ({
                 name: cmd.numeroCommande,
                 lat: cmd.latitude,
-                lng: cmd.longtitude  // ← correspond au champ dans le DTO
+                lng: cmd.longtitude,
+                numeroCommande: cmd.numeroCommande
             })))
         );
     }
@@ -34,16 +30,37 @@ export class ApiService {
     getNombreEquipes(): Observable<number> {
         return this.http.get<number>(`${this.apiUrl}/equipes/nb-equipes`);
     }
+    getAllEquipes(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/equipes`);
+    }
 
-    getHeuresMaxParEquipe(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/equipes/heures-max`);
+    getHeuresMax(): Observable<number> {
+        return this.http.get<number>(`${this.apiUrl}/equipes/heures-max`);
     }
 
     // ===== TOURNEES =====
     createTournee(tournee: any): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/tournees/tournee`, tournee);
     }
+
     getTourneesByDate(date: string): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/tournees/${date}`);
     }
+
+    // ===== SOLUTIONS =====
+    saveSolution(solution: any): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/solutions/solution`, solution);
+    }
+
+    getAllSolutions(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/solutions`);
+    }
+
+    activerSolution(id: number): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/solutions/${id}/activer`, {});
+    }
+    getSolutionById(id: number): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/solutions/${id}`);
+    }
+
 }

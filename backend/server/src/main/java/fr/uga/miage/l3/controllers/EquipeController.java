@@ -1,9 +1,12 @@
 package fr.uga.miage.l3.controllers;
 
 import fr.uga.miage.l3.endpoints.EquipeEndpoints;
+import fr.uga.miage.l3.responses.EquipeResponseDTO;
 import fr.uga.miage.l3.services.EquipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /// ////
 /// @CrossOrigin(origins = "http://localhost:4200")
@@ -20,6 +23,11 @@ public class EquipeController implements EquipeEndpoints {
     @Override
     public double getHeuresMax(){
         return equipeService.getHeuresMax();
+    }
+
+    @Override
+    public List<EquipeResponseDTO> getAllEquipes() {
+        return equipeService.getAllEquipes();
     }
 
 }
