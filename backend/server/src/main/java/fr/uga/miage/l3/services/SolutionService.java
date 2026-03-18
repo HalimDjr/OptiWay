@@ -49,7 +49,7 @@ public class SolutionService {
         solution.setNbCommandesLivrees(nbCommandes);
         solution.setTempsTotal(tempsTotal);
         solution.setDistanceTotale(distanceTotale);
-        solution.setCoutTotal(distanceTotale * 0.5);
+        solution.setCoutTotal((distanceTotale * 8.0 / 100.0) * 1.85);
         solution.setNbEquipesUtilisees(request.getNbEquipesUtilisees());
         solution.setTournees(tournees);
 
