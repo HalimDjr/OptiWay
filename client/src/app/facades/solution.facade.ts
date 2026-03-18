@@ -43,11 +43,19 @@ export class SolutionFacade {
         if (solutions.length === 0) return '';
 
         return solutions.reduce((best, current) => {
-            const bData = best.data;
-            const cData = current.data;
-            if (cData.nbCommandesLivrees > bData.nbCommandesLivrees) return current;
-            if (cData.nbCommandesLivrees === bData.nbCommandesLivrees &&
-                cData.tempsTotal < bData.tempsTotal) return current;
+            const b = best.data;
+            const c = current.data;
+
+            if (c.nbCommandesLivrees > b.nbCommandesLivrees) return current;
+            if (c.nbCommandesLivrees < b.nbCommandesLivrees) return best;
+
+            if (c.distanceTotale < b.distanceTotale) return current;
+            if (c.distanceTotale > b.distanceTotale) return best;
+
+            if (c.tempsTotal < b.tempsTotal) return current;
+            if (c.tempsTotal > b.tempsTotal) return best;
+
+            if (c.coutTotal < b.coutTotal) return current;
             return best;
         }).nom;
     }
@@ -61,18 +69,27 @@ export class SolutionFacade {
         const tourneeIds: number[] = [];
         let tourneeIndex = 0;
 
+        // Calcul nbCommandesLivrees — compte les jobs directement
+        let nbCommandesLivrees = 0;
+        for (const result of results) {
+            for (const route of result.routes) {
+                nbCommandesLivrees += route.steps.filter(step => step.type === 'job').length;
+            }
+        }
+
         for (const result of results) {
             for (const route of result.routes) {
                 const commandesIds = route.steps
                     .filter(step => step.type === 'job')
-                    .map(step => adresses[(step as any).id].numeroCommande)
+                    .map(step => adresses[(step as any).id]?.numeroCommande)
                     .filter(Boolean);
-
+                console.log('equipes:', equipes);
+                console.log('tourneeIndex:', tourneeIndex, '→ numeroEquipe:', equipes[tourneeIndex % equipes.length]?.numeroEquipe);
                 const tourneeRequest = {
                     idTournee: Math.floor(Math.random() * 2000000000),
                     tempsTotal: route.duration,
                     heureDepart: new Date().toISOString(),
-                    distanceTotale: route.cost,
+                    distanceTotale: (route.distance ?? 0) / 1000,
                     statutTournee: 2,
                     commandes_ids: commandesIds,
                     numeroEquipe: equipes[tourneeIndex % equipes.length].numeroEquipe
@@ -88,6 +105,58 @@ export class SolutionFacade {
 
         const solutionRequest = {
             nomAlgorithme,
+            nbCommandesLivrees,
+            nbEquipesUtilisees: tourneeIds.length,
+            tournees_ids: tourneeIds
+        };
+
+        return firstValueFrom(this._api.saveSolution(solutionRequest));
+    }
+
+    async sauvegarderSweep(
+        sweepResults: {result: OptimizationResult, adresses: readonly Adresse[]}[],
+        nomAlgorithme: string,
+        equipes: any[]
+    ): Promise<any> {
+        const tourneeIds: number[] = [];
+        let tourneeIndex = 0;
+
+        // Calcul nbCommandesLivrees — compte les jobs directement
+        let nbCommandesLivrees = 0;
+        for (const { result } of sweepResults) {
+            for (const route of result.routes) {
+                nbCommandesLivrees += route.steps.filter(step => step.type === 'job').length;
+            }
+        }
+
+        for (const { result, adresses } of sweepResults) {
+            for (const route of result.routes) {
+                const commandesIds = route.steps
+                    .filter(step => step.type === 'job')
+                    .map(step => adresses[(step as any).id]?.numeroCommande)
+                    .filter(Boolean);
+
+                const tourneeRequest = {
+                    idTournee: Math.floor(Math.random() * 2000000000),
+                    tempsTotal: route.duration,
+                    heureDepart: new Date().toISOString(),
+                    distanceTotale: (route.distance ?? 0) / 1000,
+                    statutTournee: 2,
+                    commandes_ids: commandesIds,
+                    numeroEquipe: equipes[tourneeIndex % equipes.length].numeroEquipe
+                };
+
+                const tournee = await firstValueFrom(
+                    this._api.createTournee(tourneeRequest)
+                );
+                tourneeIds.push(tournee.idTournee);
+                tourneeIndex++;
+            }
+        }
+
+        const solutionRequest = {
+            nomAlgorithme,
+            nbCommandesLivrees,
             nbEquipesUtilisees: tourneeIds.length,
             tournees_ids: tourneeIds
         };

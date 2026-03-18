@@ -85,6 +85,7 @@ export class Carto {
       {
         jobs: Ljobs,
         vehicles: LVehicules,
+        options: { g: true },
       },
       {
         headers: {

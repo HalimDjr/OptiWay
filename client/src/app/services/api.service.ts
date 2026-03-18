@@ -62,5 +62,8 @@ export class ApiService {
     getSolutionById(id: number): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/solutions/${id}`);
     }
+    getEntrepot(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/entrepot/${id}`);
+}
 
 }

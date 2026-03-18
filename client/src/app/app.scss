@@ -595,3 +595,144 @@
     background: #EBF8FF;
   }
 }
+.commandes-section {
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.commandes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.commandes-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.commandes-count {
+  background: #EEEDFE;
+  color: #3C3489;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.btn-charger-commandes {
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover:not(:disabled) { opacity: 0.9; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.commandes-table-wrapper {
+  margin-top: 1rem;
+  overflow-x: auto;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.commandes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    th {
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #4a5568;
+      background: #f7fafc;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+    &:hover { background: #f8fafc; }
+
+    td {
+      padding: 7px 12px;
+      color: #2d3748;
+      white-space: nowrap;
+    }
+  }
+}
+
+.cmd-id {
+  font-weight: 600;
+  color: #667eea;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.badge-statut {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+
+  &.statut-non_planifiee { background: #fef3c7; color: #92400e; }
+  &.statut-planifiee     { background: #d1fae5; color: #065f46; }
+  &.statut-en_cours      { background: #dbeafe; color: #1e40af; }
+  &.statut-livree        { background: #f0fdf4; color: #166534; }
+}
+
+.mini-map-container {
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+
+    &:hover .mini-map {
+        opacity: 0.85;
+    }
+}
+
+.mini-map {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    transition: opacity 0.2s;
+}
+.erreur-banner {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #EF4444;
+    color: #DC2626;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}

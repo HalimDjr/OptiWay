@@ -25,12 +25,10 @@ export class App implements OnInit {
   private readonly _api = inject(ApiService);
   private readonly _injector = inject(Injector);
 
-  // Facades
   protected readonly matriceFacade = inject(MatriceFacade);
   protected readonly solutionFacade = inject(SolutionFacade);
   protected readonly optimisationFacade = inject(OptimisationFacade);
 
-  // Raccourcis vers les signals des facades (pour le template)
   protected get solutionEquitable() { return this.solutionFacade.solutionEquitable; }
   protected get solutionSweep() { return this.solutionFacade.solutionSweep; }
   protected get solutionCluster() { return this.solutionFacade.solutionCluster; }
@@ -39,12 +37,13 @@ export class App implements OnInit {
   protected get isLoading() { return this._isLoading; }
   protected get loadingMessage() { return this._loadingMessage; }
 
-  // Etat local
   protected nombreEquipesMax = signal<number>(1);
   protected heuresMaxParEquipe = signal<number>(10000);
   private equipes = signal<any[]>([]);
+  protected readonly commandes = signal<any[]>([]);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _loadingMessage = signal<string>('');
+  protected readonly _erreur = signal<string>('');
 
   private readonly bounds = signal<LatLngBoundsLiteral>([[45.1, 5.6], [45.3, 5.9]]);
   protected readonly options: MapOptions = {
@@ -62,6 +61,15 @@ export class App implements OnInit {
   private readonly _adresses = signal<readonly Adresse[]>([]);
   private readonly _routes = signal<ReadonlyArray<ReadonlyArray<LatLngTuple>>>([]);
   private readonly _optimizationResult = signal<undefined | OptimizationResult>(undefined);
+  private readonly _sweepResults = signal<{result: OptimizationResult, adresses: readonly Adresse[]}[]>([]);
+
+  // Cache des routes par algo
+  private readonly _routesParAlgo = signal<{
+    EQUITABLE?: ReadonlyArray<ReadonlyArray<LatLngTuple>>,
+    SWEEP?: ReadonlyArray<ReadonlyArray<LatLngTuple>>,
+    CLUSTER?: ReadonlyArray<ReadonlyArray<LatLngTuple>>
+  }>({});
+
   protected readonly layers: Signal<Layer[]>;
 
   private readonly colors = [
@@ -93,55 +101,51 @@ export class App implements OnInit {
     ]);
   }
 
-  // Délégations vers les facades pour le template
   protected calculerCout(d: number) { return this.solutionFacade.calculerCout(d); }
   protected meilleureSolution() { return this.solutionFacade.meilleureSolution(); }
-  protected ouvrirModal(s: any) { this.solutionFacade.ouvrirModal(s); }
+
+  protected ouvrirModal(s: any): void {
+    this.solutionFacade.ouvrirModal(s);
+    // Charge les routes depuis le cache
+    const algo = s.nomAlgorithme as 'EQUITABLE' | 'SWEEP' | 'CLUSTER';
+    const routesCachees = this._routesParAlgo()[algo];
+    if (routesCachees) {
+      this._routes.set(routesCachees);
+    }
+  }
+
   protected fermerModal() { this.solutionFacade.fermerModal(); }
 
-  protected async validerSolution(id: number): Promise<void> {
+  protected async chargerCommandes(): Promise<void> {
     this._isLoading.set(true);
-    this._loadingMessage.set('Validation...');
-    try {
-      await this.solutionFacade.valider(id);
-    } finally {
-      this._isLoading.set(false);
-      this._loadingMessage.set('');
-    }
-  }
+    this._loadingMessage.set('Chargement des commandes...');
 
-  protected async afficherSolutionSurCarte(solution: any): Promise<void> {
-    this._isLoading.set(true);
-    this._loadingMessage.set('Chargement des routes...');
-    try {
-      const parking = this._adresses().at(-1)!;
-      const routes = await this.optimisationFacade.afficherDepuisBackend(solution, parking);
-      this._routes.set(routes);
-      this.solutionFacade.fermerModal();
-    } finally {
-      this._isLoading.set(false);
-      this._loadingMessage.set('');
-    }
-  }
+    this._api.getCommandesNonLivrees().subscribe({
+      next: async (cmds) => {
+        this.commandes.set(cmds);
 
-  // =============================================
-  // INITIALISATION
-  // =============================================
-  ngOnInit(): void {
-    this._isLoading.set(true);
-    this._loadingMessage.set('Chargement des équipes...');
+        const adressesCommandes = cmds
+          .map((cmd: any) => ({
+            name: cmd.numeroCommande,
+            lat: cmd.latitude,
+            lng: cmd.longtitude,
+            numeroCommande: cmd.numeroCommande,
+          }))
+          .filter((a: any) => a.lat != null && a.lng != null);
 
-    this._api.getAllEquipes().subscribe({
-      next: async (equipes) => {
-        this.equipes.set(equipes);
-        this.nombreEquipesMax.set(equipes.length);
-        this.heuresMaxParEquipe.set(Math.max(...equipes.map((e: any) => e.nbHeuresMax)));
+        this._loadingMessage.set('Chargement de l\'entrepôt...');
+        this._api.getEntrepot(1).subscribe({
+          next: async (entrepot) => {
+            const parking: any = {
+              name: entrepot.nom,
+              lat: entrepot.latitude,
+              lng: entrepot.longtitude,
+            };
 
-        this._loadingMessage.set('Chargement des commandes...');
-        this._api.getAdressesCommandes().subscribe({
-          next: async (adresses) => {
+            const adresses = [...adressesCommandes, parking];
             this._adresses.set(adresses);
-            this._loadingMessage.set('Vérification du cache matrice...');
+
+            this._loadingMessage.set('Calcul de la matrice de distances...');
             try {
               await this.matriceFacade.chargerMatrice(adresses);
             } catch (err) {
@@ -158,10 +162,60 @@ export class App implements OnInit {
     });
   }
 
+  protected async validerSolution(id: number): Promise<void> {
+    this._isLoading.set(true);
+    this._loadingMessage.set('Validation...');
+    try {
+      await this.solutionFacade.valider(id);
+    } finally {
+      this._isLoading.set(false);
+      this._loadingMessage.set('');
+    }
+  }
+
+protected async afficherSolutionSurCarte(solution: any): Promise<void> {
+    const algo = solution.nomAlgorithme as 'EQUITABLE' | 'SWEEP' | 'CLUSTER';
+    const routesCachees = this._routesParAlgo()[algo];
+    console.log('algo:', algo, 'routes cachées:', routesCachees?.length);
+    if (routesCachees) {
+        this._routes.set(routesCachees);
+    }
+    this.solutionFacade.fermerModal();
+}
+
+  // =============================================
+  // INITIALISATION
+  // =============================================
+  ngOnInit(): void {
+    this._isLoading.set(true);
+    this._loadingMessage.set('Chargement des équipes...');
+
+    this._api.getAllEquipes().subscribe({
+      next: (equipes) => {
+        this.equipes.set(equipes);
+        this.nombreEquipesMax.set(equipes.length);
+        this.heuresMaxParEquipe.set(Math.max(...equipes.map((e: any) => e.nbHeuresMax)));
+        this._isLoading.set(false);
+        this._loadingMessage.set('');
+      },
+      error: () => this._isLoading.set(false)
+    });
+  }
+
   // =============================================
   // OPTIMISATION EQUITABLE
   // =============================================
   protected async optimizeRoutesEquitable(nbVehicules: number, maxTime: number): Promise<void> {
+    if (nbVehicules > this.nombreEquipesMax()) {
+    this._erreur.set(`⚠️ Seulement ${this.nombreEquipesMax()} équipes disponibles.`);
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+  }
+  if (this._adresses().length === 0) {
+    this._erreur.set('⚠️ Chargez les commandes avant de lancer l\'optimisation.');
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+  }
     setTimeout(() => this._isLoading.set(true), 0);
     const adresses = this._adresses();
     if (adresses.length === 0) return;
@@ -175,6 +229,7 @@ export class App implements OnInit {
           adresses, nbVehicules, maxTime
       );
       this._routes.set(routes);
+      this._routesParAlgo.update(r => ({ ...r, EQUITABLE: routes }));
 
       this._loadingMessage.set('Sauvegarde solution équitable...');
       const solution = await this.solutionFacade.sauvegarder(
@@ -194,6 +249,16 @@ export class App implements OnInit {
   // OPTIMISATION CLUSTER
   // =============================================
   protected async optimizeRoutesCluster(nbVehicules: number, maxTime: number): Promise<void> {
+    if (nbVehicules > this.nombreEquipesMax()) {
+    this._erreur.set(`⚠️ Seulement ${this.nombreEquipesMax()} équipes disponibles.`);
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+}
+  if (this._adresses().length === 0) {
+    this._erreur.set('⚠️ Chargez les commandes avant de lancer l\'optimisation.');
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+}
     setTimeout(() => this._isLoading.set(true), 0);
     const adresses = this._adresses();
     if (adresses.length === 0) return;
@@ -207,6 +272,7 @@ export class App implements OnInit {
           adresses, nbVehicules, maxTime, this.matriceFacade.matrice()
       );
       this._routes.set(routes);
+      this._routesParAlgo.update(r => ({ ...r, CLUSTER: routes }));
 
       this._loadingMessage.set('Sauvegarde solution clusters...');
       const solution = await this.solutionFacade.sauvegarder(
@@ -226,6 +292,16 @@ export class App implements OnInit {
   // OPTIMISATION SWEEP
   // =============================================
   protected async optimizationSweeper(nbVehicules: number, maxTime: number): Promise<void> {
+    if (nbVehicules > this.nombreEquipesMax()) {
+    this._erreur.set(`⚠️ Seulement ${this.nombreEquipesMax()} équipes disponibles.`);
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+}
+  if (this._adresses().length === 0) {
+    this._erreur.set('⚠️ Chargez les commandes avant de lancer l\'optimisation.');
+    setTimeout(() => this._erreur.set(''), 3000);
+    return;
+}
     setTimeout(() => this._isLoading.set(true), 0);
     const adresses = this._adresses();
     if (adresses.length === 0) return;
@@ -235,6 +311,7 @@ export class App implements OnInit {
       this._loadingMessage.set('Optimisation balayeuse en cours...');
       let vehiculesRestant = nbVehicules;
       this._routes.set([]);
+      this._sweepResults.set([]);
 
       const parking = adresses.at(-1)!;
       const angles = this._sweep.constructionDesAngles(adresses, parking);
@@ -253,6 +330,13 @@ export class App implements OnInit {
           if (unassigned === 0) {
             vehiculesRestant -= v;
             chunkSolved = true;
+            const currentResult = this._optimizationResult();
+            if (currentResult) {
+              this._sweepResults.update(prev => [...prev, {
+                result: currentResult,
+                adresses: chunk
+              }]);
+            }
             break;
           } else {
             this._routes.set(routesAvant);
@@ -263,11 +347,14 @@ export class App implements OnInit {
         await new Promise(r => setTimeout(r, 1000));
       }
 
-      const lastResult = this._optimizationResult();
-      if (lastResult) {
+      const allResults = this._sweepResults();
+      if (allResults.length > 0) {
+        // Sauvegarde les routes sweep dans le cache
+        this._routesParAlgo.update(r => ({ ...r, SWEEP: this._routes() }));
+
         this._loadingMessage.set('Sauvegarde solution balayeuse...');
-        const solution = await this.solutionFacade.sauvegarder(
-            [lastResult], adresses.slice(0, -1), 'SWEEP', this.equipes()
+        const solution = await this.solutionFacade.sauvegarderSweep(
+            allResults, 'SWEEP', this.equipes()
         );
         this.solutionFacade.solutionSweep.set(solution);
       }
@@ -320,4 +407,62 @@ export class App implements OnInit {
     );
     this._routes.set([...previousRoutes, ...newRoutes]);
   }
+
+  protected layersModal(): Layer[] {
+    const back = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, attribution: '...'
+    });
+    const bboxRectangle: Rectangle = rectangle(this.bounds(), { color: 'blue', weight: 1 });
+    const markers = this._adresses().map((a, i) =>
+      getMarker(a, i === this._adresses().length - 1 ? 'black' : 'blue')
+    );
+    const polylines = this._routes().map((r, i) =>
+      polyline([...r], {
+        color: this.colors[i % this.colors.length],
+        weight: 4, opacity: 0.8, smoothFactor: 1
+      })
+    );
+    return [back, bboxRectangle, ...markers, ...polylines];
+  }
+  protected readonly layersEquitable = computed<Layer[]>(() => {
+    const back = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18, attribution: '...'
+    });
+    const routes = this._routesParAlgo().EQUITABLE ?? [];
+    return [
+        back,
+        ...routes.map((r, i) => polyline([...r], {
+            color: this.colors[i % this.colors.length],
+            weight: 3, opacity: 0.8
+        }))
+    ];
+});
+
+protected readonly layersSweep = computed<Layer[]>(() => {
+    const back = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18, attribution: '...'
+    });
+    const routes = this._routesParAlgo().SWEEP ?? [];
+    return [
+        back,
+        ...routes.map((r, i) => polyline([...r], {
+            color: this.colors[i % this.colors.length],
+            weight: 3, opacity: 0.8
+        }))
+    ];
+});
+
+protected readonly layersCluster = computed<Layer[]>(() => {
+    const back = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18, attribution: '...'
+    });
+    const routes = this._routesParAlgo().CLUSTER ?? [];
+    return [
+        back,
+        ...routes.map((r, i) => polyline([...r], {
+            color: this.colors[i % this.colors.length],
+            weight: 3, opacity: 0.8
+        }))
+    ];
+});
 }

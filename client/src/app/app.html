@@ -3,11 +3,65 @@
         <h1>Optimisation des tournées</h1>
     </header>
 
+    <!-- Section commandes -->
+    <div class="commandes-section">
+        <div class="commandes-header">
+            <div class="commandes-header-left">
+                @if (commandes().length > 0) {
+                    <span class="commandes-count">{{ commandes().length }} commandes chargées</span>
+                }
+            </div>
+            <button class="btn-charger-commandes"
+                    (click)="chargerCommandes()"
+                    [disabled]="isLoading()">
+                📦 Afficher les commandes non livrées
+            </button>
+        </div>
+
+        @if (commandes().length > 0) {
+            <div class="commandes-table-wrapper">
+                <table class="commandes-table">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Date limite</th>
+                            <th>Statut</th>
+                            <th>Poids (kg)</th>
+                            <th>Volume (m³)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (cmd of commandes(); track cmd.numeroCommande) {
+                            <tr>
+                                <td class="cmd-id">{{ cmd.numeroCommande }}</td>
+                                <td>{{ cmd.dateLimite ? cmd.dateLimite.substring(0, 10) : '' }}</td>
+                                <td>
+                                    <span class="badge-statut statut-{{ cmd.statut?.toLowerCase() }}">
+                                        {{ cmd.statut }}
+                                    </span>
+                                </td>
+                                <td>{{ cmd.poids }}</td>
+                                <td>{{ cmd.volume }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
     <!-- Chargement initial -->
     @if (isLoading()) {
         <div class="loading-banner">
             <div class="spinner"></div>
             <span>{{ loadingMessage() }}</span>
+        </div>
+    }
+
+    <!-- Erreur -->
+    @if (_erreur()) {
+        <div class="erreur-banner">
+            {{ _erreur() }}
         </div>
     }
 
@@ -154,14 +208,14 @@
                             <span>Optimisation en cours...</span>
                         </div>
                     } @else {
-                        <div class="algo-icon-container" (click)="ouvrirModal(solutionEquitable())">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
-                                <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                                <path d="M6 1v4M10 1v4M14 1v4"></path>
-                            </svg>
+                        <div class="mini-map-container" (click)="ouvrirModal(solutionEquitable())">
+                            <div leaflet
+                                 [leafletOptions]="optionsMini"
+                                 [leafletLayers]="layersEquitable()"
+                                 class="mini-map">
+                            </div>
                             <span class="algo-icon-label">Distribution équilibrée · Voir détails</span>
                         </div>
-
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <span class="metric-label">Tournées</span>
@@ -193,7 +247,6 @@
                                 </span>
                             </div>
                         </div>
-
                         <button class="btn-valider"
                                 [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
                                 (click)="validerSolution(solutionEquitable().id)">
@@ -223,16 +276,14 @@
                             <span>Optimisation en cours...</span>
                         </div>
                     } @else {
-                        <div class="algo-icon-container" (click)="ouvrirModal(solutionSweep())">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
-                                <path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.5"></path>
-                                <polyline points="16 2 22 8 16 8"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="14"></line>
-                                <line x1="10" y1="18" x2="18" y2="18"></line>
-                            </svg>
+                        <div class="mini-map-container" (click)="ouvrirModal(solutionSweep())">
+                            <div leaflet
+                                 [leafletOptions]="optionsMini"
+                                 [leafletLayers]="layersSweep()"
+                                 class="mini-map">
+                            </div>
                             <span class="algo-icon-label">Minimiser nb tournées · Voir détails</span>
                         </div>
-
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <span class="metric-label">Tournées</span>
@@ -264,7 +315,6 @@
                                 </span>
                             </div>
                         </div>
-
                         <button class="btn-valider"
                                 [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
                                 (click)="validerSolution(solutionSweep().id)">
@@ -294,14 +344,14 @@
                             <span>Optimisation en cours...</span>
                         </div>
                     } @else {
-                        <div class="algo-icon-container" (click)="ouvrirModal(solutionCluster())">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="algo-icon">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
+                        <div class="mini-map-container" (click)="ouvrirModal(solutionCluster())">
+                            <div leaflet
+                                 [leafletOptions]="optionsMini"
+                                 [leafletLayers]="layersCluster()"
+                                 class="mini-map">
+                            </div>
                             <span class="algo-icon-label">Minimiser la durée · Voir détails</span>
                         </div>
-
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <span class="metric-label">Tournées</span>
@@ -333,7 +383,6 @@
                                 </span>
                             </div>
                         </div>
-
                         <button class="btn-valider"
                                 [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
                                 (click)="validerSolution(solutionCluster().id)">
@@ -365,18 +414,13 @@
                 </div>
 
                 <div class="modal-body">
-
-                    <!-- Carte grande -->
                     <div class="modal-map"
                          leaflet
                          [leafletOptions]="options"
                          [leafletLayers]="layersModal()">
                     </div>
-
-                    <!-- Liste des tournées -->
                     <div class="modal-sidebar">
                         <p class="sidebar-title">Tournées de cette solution</p>
-
                         @if (solutionModal()?.tournees?.length) {
                             <div class="tournee-list">
                                 @for (tournee of solutionModal().tournees; track tournee.idTournee) {
@@ -398,8 +442,6 @@
                         } @else {
                             <p class="sidebar-empty">Aucune tournée disponible</p>
                         }
-
-                        <!-- Récap -->
                         <div class="sidebar-recap">
                             <div class="recap-row">
                                 <span>Total commandes</span>
@@ -414,18 +456,15 @@
                                 <span>{{ calculerCout(solutionModal()?.distanceTotale) | number:'1.2-2' }} €</span>
                             </div>
                         </div>
-
                         <button class="btn-voir-carte"
                                 (click)="afficherSolutionSurCarte(solutionModal())">
                             Voir sur la carte principale
                         </button>
-
                         <button class="btn-valider-modal"
                                 (click)="validerSolution(solutionModal().id); fermerModal()">
                             Valider cette solution
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>

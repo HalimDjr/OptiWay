@@ -16,44 +16,26 @@ const client = turf.point([lng, lat]);
 const angle = turf.bearing(depot, client);*/
 
 
-public constructionDesAngles(adresses:readonly Adresse[],parking:Adresse):AnglesClients{
+public constructionDesAngles(adresses: readonly Adresse[], parking: Adresse): AnglesClients {
     
-    const depot =turf.point([parking.lat,parking.lng]);
+    const depot = turf.point([parking.lng, parking.lat]);  
 
-  
+    let mesAngles: AnglesClients = { angles: [] };
 
-let mesAngles: AnglesClients = {
-  angles: []
+    adresses.forEach((v) => {
+        const client = turf.point([v.lng, v.lat]);  
+        const angle = turf.bearing(depot, client);
+        mesAngles.angles.push({
+            angle: angle,
+            adresse: { ...v }  
+        });
+    });
 
-};
+    mesAngles.angles.forEach((v) => {
+        console.log("l'adresse [" + v.adresse.lat + "," + v.adresse.lng + "] correspond à l'angle " + v.angle);
+    });
 
-
-    
-
-    adresses.forEach((v)=>{
-       
-        const client=turf.point([v.lat,v.lng]);
-        const angle=turf.bearing(depot,client);
-        mesAngles.angles.push(
-            {
-                angle:angle,
-                adresse:{
-                   lat:v.lat,
-                   lng:v.lng
-            }
-            }
-        )
-
-    })
-  
-
-   mesAngles.angles.forEach((v)=>{
-    console.log("l'adresse ["+v.adresse.lat+","+v.adresse.lng+"]correspent à l'angle"+v.angle)
-   })
-   
-
-   return mesAngles;
-
+    return mesAngles;
 }
 
 //noramizationAngles pour que le tri croissant soit correcte 

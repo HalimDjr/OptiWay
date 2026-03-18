@@ -12,6 +12,7 @@ export interface OptimizationResult {
             routing: number;
         }>
         cost: number;
+        distance: number;        // ← ajout
         duration: number;
         priority: number;
         service: number;
@@ -23,6 +24,7 @@ export interface OptimizationResult {
 
 export interface VehiculeRoute {
     readonly cost: number;
+    readonly distance: number;   // ← ajout
     readonly duration: number;
     readonly priority: number;
     readonly service: number;
@@ -34,9 +36,8 @@ export interface VehiculeRoute {
 }
 
 export interface RouteStepBase {
-    // readonly type: "start" | "job" | "end";
     readonly arrival: number;
-    // readonly id: number;
+    readonly distance: number;   // ← ajout
     readonly location: readonly [lng: number, lat: number];
     readonly service: number;
     readonly setup: number;
@@ -59,6 +60,7 @@ export type RouteStep = RouteStepBaseStartEnd | RouteStepBaseJob;
 const RouteStepStartEndSchema = zod.object({
     type: zod.enum(["start", "end"]),
     arrival: zod.number(),
+    distance: zod.number().optional().default(0),  // ← ajout
     location: zod.tuple([zod.number(), zod.number()]),
     service: zod.number(),
     setup: zod.number(),
@@ -67,6 +69,7 @@ const RouteStepStartEndSchema = zod.object({
 const RouteStepJobSchema = zod.object({
     type: zod.literal("job"),
     arrival: zod.number(),
+    distance: zod.number().optional().default(0),  // ← ajout
     id: zod.number(),
     location: zod.tuple([zod.number(), zod.number()]),
     service: zod.number(),
@@ -77,6 +80,7 @@ const RouteStepSchema = zod.union([RouteStepStartEndSchema, RouteStepJobSchema])
 
 const VehiculeRouteSchema = zod.object({
     cost: zod.number(),
+    distance: zod.number().optional().default(0),  // ← ajout
     duration: zod.number(),
     priority: zod.number(),
     service: zod.number(),
@@ -98,6 +102,7 @@ const OptimizationResultSchema = zod.object({
             routing: zod.number(),
         }),
         cost: zod.number(),
+        distance: zod.number().optional().default(0),  // ← ajout
         duration: zod.number(),
         priority: zod.number(),
         service: zod.number(),
@@ -112,11 +117,11 @@ export function parseOptimizationResultP(data: unknown): Promise<OptimizationRes
 }
 
 export interface OptimizationReport {
-  requestedVehicles: number;    // ce que l'utilisateur a demandé
-  vehiclesUsed: number;         // ce qu'on utilise réellement
-  minVehiclesNeeded: number;    // minimum calculé
-  totalAddresses: number;       // total fourni
-  assignedAddresses: number;    // effectivement dans une route
-  unassignedAddresses: Adresse[]; // adresses non couvertes
-  warnings: string[];           // messages explicatifs
+  requestedVehicles: number;
+  vehiclesUsed: number;
+  minVehiclesNeeded: number;
+  totalAddresses: number;
+  assignedAddresses: number;
+  unassignedAddresses: Adresse[];
+  warnings: string[];
 }
