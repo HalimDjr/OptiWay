@@ -11,9 +11,7 @@ import java.util.Optional;
 
 public interface SolutionRepository extends JpaRepository<SolutionEntity, Integer> {
 
-    // Interprétation par nom
-    @Query(value = "SELECT * FROM solution_entity WHERE nom_algorithme = :algo AND DATE(date) = CURRENT_DATE",
-            nativeQuery = true)
+    @Query("SELECT s FROM SolutionEntity s WHERE s.nomAlgorithme = :algo AND CAST(s.date AS date) = CURRENT_DATE")
     Optional<SolutionEntity> findByNomAlgorithmeAndToday(@Param("algo") String algo);
 
     Optional<SolutionEntity> findByActiveeTrue();

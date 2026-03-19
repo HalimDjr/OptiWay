@@ -130,13 +130,13 @@ export class App implements OnInit {
       next: async (cmds) => {
         this.commandes.set(cmds);
         const adressesCommandes = cmds
-          .map((cmd: any) => ({
-            name: cmd.numeroCommande,
-            lat: cmd.latitude,
-            lng: cmd.longtitude,
-            numeroCommande: cmd.numeroCommande,
-          }))
-          .filter((a: any) => a.lat != null && a.lng != null);
+            .map((cmd: any) => ({
+              name: cmd.numeroCommande,
+              lat: cmd.latitude,
+              lng: cmd.longtitude,
+              numeroCommande: cmd.numeroCommande,
+            }))
+            .filter((a: any) => a.lat != null && a.lng != null);
         this._loadingMessage.set('Chargement de l\'entrepôt...');
         this._api.getEntrepot(1).subscribe({
           next: async (entrepot) => {
@@ -164,35 +164,35 @@ export class App implements OnInit {
     });
   }
 
-protected async validerSolution(id: number): Promise<void> {
+  protected async validerSolution(id: number): Promise<void> {
     this._isLoading.set(true);
     this._loadingMessage.set('Validation...');
     try {
-        await this.solutionFacade.valider(id);
-        await firstValueFrom(this._api.planifierCommandes(id));
+      await this.solutionFacade.valider(id);
+      await firstValueFrom(this._api.planifierCommandes(id));
 
-        // Met à jour le statut des commandes en front
-        const solution =
-            this.solutionFacade.solutionEquitable()?.id === id ? this.solutionFacade.solutionEquitable() :
-            this.solutionFacade.solutionSweep()?.id === id ? this.solutionFacade.solutionSweep() :
-            this.solutionFacade.solutionCluster();
+      // Met à jour le statut des commandes en front
+      const solution =
+          this.solutionFacade.solutionEquitable()?.id === id ? this.solutionFacade.solutionEquitable() :
+              this.solutionFacade.solutionSweep()?.id === id ? this.solutionFacade.solutionSweep() :
+                  this.solutionFacade.solutionCluster();
 
-        if (solution) {
-            const commandesPlanifiees = new Set(
-                solution.tournees.flatMap((t: any) => t.commandes.map((c: any) => c.numeroCommande))
-            );
-            this.commandes.update(cmds =>
-                cmds.map((cmd: any) => commandesPlanifiees.has(cmd.numeroCommande)
-                    ? { ...cmd, status: 'PLANIFIEE' }
-                    : cmd
-                )
-            );
-        }
+      if (solution) {
+        const commandesPlanifiees = new Set(
+            solution.tournees.flatMap((t: any) => t.commandes.map((c: any) => c.numeroCommande))
+        );
+        this.commandes.update(cmds =>
+            cmds.map((cmd: any) => commandesPlanifiees.has(cmd.numeroCommande)
+                ? { ...cmd, status: 'PLANIFIEE' }
+                : cmd
+            )
+        );
+      }
     } finally {
-        this._isLoading.set(false);
-        this._loadingMessage.set('');
+      this._isLoading.set(false);
+      this._loadingMessage.set('');
     }
-}
+  }
 
   protected async afficherSolutionSurCarte(solution: any): Promise<void> {
     const algo = solution.nomAlgorithme as 'EQUITABLE' | 'SWEEP' | 'CLUSTER';
@@ -752,14 +752,27 @@ protected async validerSolution(id: number): Promise<void> {
       this._sauvegardEnCours.set(false);
     }
   }
-protected readonly solutionValidee = signal<string>('');
+  protected readonly solutionValidee = signal<string>('');
 
-protected confirmerValidation(id: number, algo: string): void {
-    if (confirm('Confirmer la validation de cette solution ?')) {
-        this.validerSolution(id);
-        this.solutionValidee.set(algo);
-    }
-}
+  protected readonly _confirmationVisible = signal<boolean>(false);
+  protected readonly _confirmationId = signal<number>(0);
+  protected readonly _confirmationAlgo = signal<string>('');
+
+  protected confirmerValidation(id: number, algo: string): void {
+    this._confirmationId.set(id);
+    this._confirmationAlgo.set(algo);
+    this._confirmationVisible.set(true);
+  }
+
+  protected confirmerOui(): void {
+    this.validerSolution(this._confirmationId());
+    this.solutionValidee.set(this._confirmationAlgo());
+    this._confirmationVisible.set(false);
+  }
+
+  protected confirmerNon(): void {
+    this._confirmationVisible.set(false);
+  }
 
   protected getSelectValue(event: Event): string {
     return (event.target as HTMLSelectElement).value;

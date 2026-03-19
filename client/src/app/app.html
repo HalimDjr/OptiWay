@@ -22,13 +22,13 @@
             <div class="commandes-table-wrapper">
                 <table class="commandes-table">
                     <thead>
-                        <tr>
-                            <th>Numéro</th>
-                            <th>Date limite</th>
-                            <th>Statut</th>
-                            <th>Poids (kg)</th>
-                            <th>Volume (m³)</th>
-                        </tr>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Date limite</th>
+                        <th>Statut</th>
+                        <th>Poids (kg)</th>
+                        <th>Volume (m³)</th>
+                    </tr>
                     </thead>
                     <tbody>
                         @for (cmd of commandes(); track cmd.numeroCommande) {
@@ -50,13 +50,6 @@
         }
     </div>
 
-    <!-- Chargement initial -->
-    @if (isLoading()) {
-        <div class="loading-banner">
-            <div class="spinner"></div>
-            <span>{{ loadingMessage() }}</span>
-        </div>
-    }
 
     <!-- Erreur globale -->
     @if (_erreur()) {
@@ -72,6 +65,14 @@
              [leafletLayers]="layers()">
         </div>
     </div>
+
+    <!-- Chargement initial -->
+    @if (isLoading()) {
+        <div class="loading-banner">
+            <div class="spinner"></div>
+            <span>{{ loadingMessage() }}</span>
+        </div>
+    }
 
     <div class="controls-section">
 
@@ -152,7 +153,7 @@
                     </svg>
                     <div class="btn-content">
                         <span class="btn-title">Optimisation balayeuse</span>
-                        <span class="btn-subtitle">Minimiser nb tournées</span>
+                        <span class="btn-subtitle">Minimiser nombre tournées</span>
                     </div>
                 </button>
 
@@ -286,7 +287,7 @@
                     } @else {
                         <div class="mini-map-container" (click)="ouvrirModal(solutionSweep())">
                             <div leaflet [leafletOptions]="optionsMini" [leafletLayers]="layersSweep()" class="mini-map"></div>
-                            <span class="algo-icon-label">Minimiser nb tournées · Voir détails</span>
+                            <span class="algo-icon-label">Minimiser nombre tournées · Voir détails</span>
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-card">
@@ -467,11 +468,10 @@
                                                         </option>
                                                     }
                                                 </select>
-                                                <!-- Bouton supprimer tournée -->
                                                 <button class="btn-supprimer-tournee"
                                                         (click)="supprimerTournee(tournee.idTournee)"
                                                         title="Supprimer cette tournée">
-                                                    🗑️ Supprimer
+                                                    🗑️
                                                 </button>
                                             } @else {
                                                 <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
@@ -573,7 +573,7 @@
                         @if (_modificationEnCours()) {
                             <button class="btn-sauvegarder-edit"
                                     (click)="sauvegarderModifications()"
-                                    [disabled]="_sauvegardEnCours()">
+                                    [disabled]="_sauvegardEnCours() || !!_erreur()">
                                 @if (_sauvegardEnCours()) {
                                     <span class="spinner-btn"></span>
                                     Sauvegarde en cours...
@@ -595,7 +595,7 @@
 
                         @if (!solutionValidee()) {
                             <button class="btn-valider-modal"
-                                    (click)="confirmerValidation(solutionModal().id, solutionModal().nomAlgorithme); fermerModal()">
+                                    (click)="confirmerValidation(solutionModal().id, solutionModal().nomAlgorithme)">
                                 Valider cette solution
                             </button>
                         } @else if (solutionValidee() === solutionModal()?.nomAlgorithme) {
@@ -682,6 +682,28 @@
                 </div>
             }
 
+        </div>
+    }
+
+    <!-- ===== MODALE CONFIRMATION VALIDATION ===== -->
+    @if (_confirmationVisible()) {
+        <div class="confirmation-backdrop">
+            <div class="confirmation-modal">
+                <div class="confirmation-icon">✅</div>
+                <h3 class="confirmation-title">Valider cette solution ?</h3>
+                <p class="confirmation-message">
+                    La solution <strong>{{ _confirmationAlgo() }}</strong> sera validée
+                    et les commandes seront marquées comme planifiées.
+                </p>
+                <div class="confirmation-actions">
+                    <button class="btn-confirmation-non" (click)="confirmerNon()">
+                        Annuler
+                    </button>
+                    <button class="btn-confirmation-oui" (click)="confirmerOui()">
+                        Confirmer
+                    </button>
+                </div>
+            </div>
         </div>
     }
 
