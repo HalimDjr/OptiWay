@@ -116,4 +116,22 @@ public class TourneeService {
                 );
         }
     }
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW)
+public TourneeResponseDTO updateTournee(int id, TourneeRequest request) {
+    TourneeEntity tournee = tourneeComponent.getTourneeById(id)
+            .orElseThrow(() -> new RuntimeException("Tournée " + id + " non trouvée"));
+
+    // Met à jour les commandes
+    Set<CommandeEntity> commandes = commandeRelativeTournee(request);
+    tournee.setCommandes(commandes);
+
+    // Met à jour l'équipe
+    if (request.getNumeroEquipe() > 0) {
+        EquipeEntity equipe = equipeAAjouter(request.getNumeroEquipe());
+        tournee.setEquipe(equipe);
+    }
+
+    TourneeEntity saved = tourneeComponent.createTournee(tournee);
+    return tourneeMapper.toResponse(saved);
+}
 }

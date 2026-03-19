@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,4 +34,8 @@ public class TourneeController  implements TourneeEndpoints {
     public List<TourneeResponseDTO> getAllTournees(LocalDate date) {
         return tourneeService.getTourneesByDate(date);
     }
+    @Override
+    public TourneeResponseDTO updateTournee(@PathVariable int id, @RequestBody TourneeRequest tourneeRequest) {
+        return tourneeService.updateTournee(id, tourneeRequest);
+}
 }

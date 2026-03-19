@@ -5,7 +5,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
-
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Entity
 public class LivreurEntity {
     @Id

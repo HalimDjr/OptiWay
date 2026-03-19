@@ -58,7 +58,7 @@
         </div>
     }
 
-    <!-- Erreur -->
+    <!-- Erreur globale -->
     @if (_erreur()) {
         <div class="erreur-banner">
             {{ _erreur() }}
@@ -188,8 +188,7 @@
             <div class="solutions-grid">
 
                 <!-- SOLUTION ÉQUITABLE -->
-                <div class="solution-card"
-                     [class.solution-best]="meilleureSolution() === 'EQUITABLE'">
+                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'EQUITABLE'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Équitable</span>
@@ -201,7 +200,6 @@
                             </div>
                         </div>
                     </div>
-
                     @if (!solutionEquitable()) {
                         <div class="solution-loading">
                             <div class="spinner"></div>
@@ -209,11 +207,7 @@
                         </div>
                     } @else {
                         <div class="mini-map-container" (click)="ouvrirModal(solutionEquitable())">
-                            <div leaflet
-                                 [leafletOptions]="optionsMini"
-                                 [leafletLayers]="layersEquitable()"
-                                 class="mini-map">
-                            </div>
+                            <div leaflet [leafletOptions]="optionsMini" [leafletLayers]="layersEquitable()" class="mini-map"></div>
                             <span class="algo-icon-label">Distribution équilibrée · Voir détails</span>
                         </div>
                         <div class="metrics-grid">
@@ -247,8 +241,7 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider"
-                                [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
+                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
                                 (click)="validerSolution(solutionEquitable().id)">
                             Valider cette solution
                         </button>
@@ -256,8 +249,7 @@
                 </div>
 
                 <!-- SOLUTION SWEEP -->
-                <div class="solution-card"
-                     [class.solution-best]="meilleureSolution() === 'SWEEP'">
+                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'SWEEP'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Balayeuse</span>
@@ -269,7 +261,6 @@
                             </div>
                         </div>
                     </div>
-
                     @if (!solutionSweep()) {
                         <div class="solution-loading">
                             <div class="spinner"></div>
@@ -277,11 +268,7 @@
                         </div>
                     } @else {
                         <div class="mini-map-container" (click)="ouvrirModal(solutionSweep())">
-                            <div leaflet
-                                 [leafletOptions]="optionsMini"
-                                 [leafletLayers]="layersSweep()"
-                                 class="mini-map">
-                            </div>
+                            <div leaflet [leafletOptions]="optionsMini" [leafletLayers]="layersSweep()" class="mini-map"></div>
                             <span class="algo-icon-label">Minimiser nb tournées · Voir détails</span>
                         </div>
                         <div class="metrics-grid">
@@ -315,8 +302,7 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider"
-                                [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
+                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
                                 (click)="validerSolution(solutionSweep().id)">
                             Valider cette solution
                         </button>
@@ -324,8 +310,7 @@
                 </div>
 
                 <!-- SOLUTION CLUSTER -->
-                <div class="solution-card"
-                     [class.solution-best]="meilleureSolution() === 'CLUSTER'">
+                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'CLUSTER'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Clusters</span>
@@ -337,7 +322,6 @@
                             </div>
                         </div>
                     </div>
-
                     @if (!solutionCluster()) {
                         <div class="solution-loading">
                             <div class="spinner"></div>
@@ -345,11 +329,7 @@
                         </div>
                     } @else {
                         <div class="mini-map-container" (click)="ouvrirModal(solutionCluster())">
-                            <div leaflet
-                                 [leafletOptions]="optionsMini"
-                                 [leafletLayers]="layersCluster()"
-                                 class="mini-map">
-                            </div>
+                            <div leaflet [leafletOptions]="optionsMini" [leafletLayers]="layersCluster()" class="mini-map"></div>
                             <span class="algo-icon-label">Minimiser la durée · Voir détails</span>
                         </div>
                         <div class="metrics-grid">
@@ -383,8 +363,7 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider"
-                                [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
+                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
                                 (click)="validerSolution(solutionCluster().id)">
                             Valider cette solution
                         </button>
@@ -404,13 +383,24 @@
                     <h3 class="modal-title">
                         Tournées — {{ solutionModal()?.nomAlgorithme }}
                     </h3>
-                    <button class="modal-close" (click)="fermerModal()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                        Fermer
-                    </button>
+                    <div class="modal-header-actions">
+                        @if (!_modificationEnCours()) {
+                            <button class="btn-modifier" (click)="activerEdition(solutionModal())">
+                                ✏️ Modifier
+                            </button>
+                        } @else {
+                            <button class="btn-annuler-edit" (click)="annulerEdition()">
+                                ✕ Annuler
+                            </button>
+                        }
+                        <button class="modal-close" (click)="fermerModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Fermer
+                        </button>
+                    </div>
                 </div>
 
                 <div class="modal-body">
@@ -421,14 +411,31 @@
                     </div>
                     <div class="modal-sidebar">
                         <p class="sidebar-title">Tournées de cette solution</p>
-                        @if (solutionModal()?.tournees?.length) {
+
+                        @if ((_modificationEnCours() ? _solutionEnEdition() : solutionModal())?.tournees?.length) {
                             <div class="tournee-list">
-                                @for (tournee of solutionModal().tournees; track tournee.idTournee) {
-                                    <div class="tournee-item">
+                                @for (tournee of (_modificationEnCours() ? _solutionEnEdition()!.tournees : solutionModal().tournees); track tournee.idTournee) {
+                                    <div class="tournee-item"
+                                         [class.tournee-item--edit]="_modificationEnCours()"
+                                         (click)="!_modificationEnCours() && ouvrirDetailTournee(tournee)">
+
                                         <div class="tournee-header">
                                             <span class="tournee-id">#{{ tournee.idTournee }}</span>
-                                            <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
+                                            @if (_modificationEnCours()) {
+                                                <select class="equipe-select"
+                                                        (change)="changerEquipe(tournee.idTournee, getEquipeByNumero(getSelectValue($event)))">
+                                                    @for (eq of equipes(); track eq.numeroEquipe) {
+                                                        <option [value]="eq.numeroEquipe"
+                                                                [selected]="eq.numeroEquipe === tournee.numeroEquipe">
+                                                            Équipe {{ eq.numeroEquipe }} — {{ eq.conducteur?.nom }}
+                                                        </option>
+                                                    }
+                                                </select>
+                                            } @else {
+                                                <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
+                                            }
                                         </div>
+
                                         <div class="tournee-stats">
                                             <span>{{ (tournee.tempsTotal / 60) | number:'1.0-0' }} min</span>
                                             <span>·</span>
@@ -436,28 +443,74 @@
                                             <span>·</span>
                                             <span>{{ tournee.commandes?.length ?? 0 }} commandes</span>
                                         </div>
+
+                                        @if (_modificationEnCours()) {
+                                            <div class="commandes-edit">
+                                                @for (cmd of tournee.commandes; track cmd.numeroCommande) {
+                                                    <div class="commande-edit-item">
+                                                        <span class="cmd-edit-num">{{ cmd.numeroCommande }}</span>
+                                                        <select class="cmd-move-select"
+                                                                (change)="deplacerCommande(cmd, tournee.idTournee, +getSelectValue($event))">
+                                                            <option value="">Déplacer vers...</option>
+                                                            @for (t of _solutionEnEdition()!.tournees; track t.idTournee) {
+                                                                @if (t.idTournee !== tournee.idTournee) {
+                                                                    <option [value]="t.idTournee">
+                                                                        → #{{ t.idTournee }} (Éq.{{ t.numeroEquipe }})
+                                                                    </option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+
                                     </div>
                                 }
                             </div>
                         } @else {
                             <p class="sidebar-empty">Aucune tournée disponible</p>
                         }
+
+                        <!-- Erreur dans le modal en mode édition -->
+                        @if (_modificationEnCours() && _erreur()) {
+                            <div class="erreur-banner erreur-modal">
+                                {{ _erreur() }}
+                            </div>
+                        }
+
+                        <!-- Warning dans le modal après sauvegarde -->
+                        @if (_warning()) {
+                            <div class="warning-banner">
+                                @for (line of _warning().split('\n'); track $index) {
+                                    <div>{{ line }}</div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Métriques -->
                         <div class="sidebar-recap">
                             <div class="recap-row">
                                 <span>Total commandes</span>
-                                <span>{{ solutionModal()?.nbCommandesLivrees }}</span>
+                                <span>{{ (_modificationEnCours() ? _solutionEnEdition() : solutionModal())?.nbCommandesLivrees }}</span>
                             </div>
                             <div class="recap-row">
                                 <span>Durée totale</span>
-                                <span>{{ (solutionModal()?.tempsTotal / 60) | number:'1.0-0' }} min</span>
+                                <span>{{ ((_modificationEnCours() ? _solutionEnEdition() : solutionModal())?.tempsTotal / 60) | number:'1.0-0' }} min</span>
                             </div>
                             <div class="recap-row">
                                 <span>Coût carburant</span>
-                                <span>{{ calculerCout(solutionModal()?.distanceTotale) | number:'1.2-2' }} €</span>
+                                <span>{{ calculerCout((_modificationEnCours() ? _solutionEnEdition() : solutionModal())?.distanceTotale) | number:'1.2-2' }} €</span>
                             </div>
                         </div>
-                        <button class="btn-voir-carte"
-                                (click)="afficherSolutionSurCarte(solutionModal())">
+
+                        @if (_modificationEnCours()) {
+                            <button class="btn-sauvegarder-edit" (click)="sauvegarderModifications()">
+                                💾 Sauvegarder et recalculer
+                            </button>
+                        }
+
+                        <button class="btn-voir-carte" (click)="afficherSolutionSurCarte(solutionModal())">
                             Voir sur la carte principale
                         </button>
                         <button class="btn-valider-modal"
@@ -467,6 +520,81 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ===== MODAL DETAIL TOURNEE ===== -->
+            @if (tourneeSelectionnee()) {
+                <div class="detail-backdrop" (click)="fermerDetailTournee()">
+                    <div class="detail-modal" (click)="$event.stopPropagation()">
+
+                        <div class="detail-header">
+                            <h4>Tournée #{{ tourneeSelectionnee().idTournee }}</h4>
+                            <button class="detail-close" (click)="fermerDetailTournee()">✕</button>
+                        </div>
+
+                        <div class="detail-body">
+
+                            @if (tourneeSelectionnee().equipeDetail?.vehicule) {
+                                <div class="detail-section">
+                                    <div class="detail-section-title">🚚 Véhicule</div>
+                                    <div class="detail-equipe">
+                                        <div class="detail-membre">
+                                            <span class="membre-role">Matricule</span>
+                                            <span class="membre-nom">{{ tourneeSelectionnee().equipeDetail.vehicule.matricule }}</span>
+                                        </div>
+                                        <div class="detail-membre">
+                                            <span class="membre-role">Poids max</span>
+                                            <span class="membre-nom">{{ tourneeSelectionnee().equipeDetail.vehicule.capacitePoidsMax }} kg</span>
+                                        </div>
+                                        <div class="detail-membre">
+                                            <span class="membre-role">Volume max</span>
+                                            <span class="membre-nom">{{ tourneeSelectionnee().equipeDetail.vehicule.capaciteVolumeMax }} m³</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (tourneeSelectionnee().equipeDetail) {
+                                <div class="detail-section">
+                                    <div class="detail-section-title">👥 Équipe {{ tourneeSelectionnee().numeroEquipe }}</div>
+                                    <div class="detail-equipe">
+                                        <div class="detail-membre">
+                                            <span class="membre-role">🚗 Conducteur</span>
+                                            <span class="membre-nom">
+                                                {{ tourneeSelectionnee().equipeDetail.conducteur?.prenom }}
+                                                {{ tourneeSelectionnee().equipeDetail.conducteur?.nom }}
+                                            </span>
+                                            <span class="membre-tel">{{ tourneeSelectionnee().equipeDetail.conducteur?.telephone }}</span>
+                                        </div>
+                                        @for (manut of tourneeSelectionnee().equipeDetail.manutentionnaires; track manut.idLivreur) {
+                                            <div class="detail-membre">
+                                                <span class="membre-role">📦 Manutentionnaire</span>
+                                                <span class="membre-nom">{{ manut.prenom }} {{ manut.nom }}</span>
+                                                <span class="membre-tel">{{ manut.telephone }}</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="detail-section">
+                                <div class="detail-section-title">📋 Commandes ({{ tourneeSelectionnee().commandes?.length ?? 0 }})</div>
+                                <div class="detail-commandes">
+                                    @for (cmd of tourneeSelectionnee().commandes; track cmd.numeroCommande) {
+                                        <div class="detail-commande">
+                                            <span class="cmd-num">{{ cmd.numeroCommande }}</span>
+                                            <span class="cmd-coords">
+                                                {{ cmd.latitude | number:'1.4-4' }}, {{ cmd.longtitude | number:'1.4-4' }}
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
         </div>
     }
 

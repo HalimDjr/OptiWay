@@ -13,6 +13,7 @@ export async function optimiseEquitable(
   }) => Promise<OptimizationResult>
 ): Promise<{
   results: OptimizationResult[];
+  tranches: Adresse[][];
   stats: {
     totalPoints: number;
     vehiculesDemandes: number;
@@ -34,6 +35,7 @@ export async function optimiseEquitable(
   if (nbVehiculesDemandes < vehiculesMinimum) {
     return {
       results: [],
+      tranches: [],
       stats: {
         totalPoints,
         vehiculesDemandes: nbVehiculesDemandes,
@@ -54,6 +56,7 @@ export async function optimiseEquitable(
   if (pointsParVehicule + 1 > POINTS_MAX_PAR_PAQUET) {
     return {
       results: [],
+      tranches: [],
       stats: {
         totalPoints,
         vehiculesDemandes: nbVehiculesDemandes,
@@ -128,6 +131,7 @@ export async function optimiseEquitable(
 
   return {
     results,
+    tranches,
     stats: {
       totalPoints,
       vehiculesDemandes: nbVehiculesDemandes,

@@ -30,11 +30,13 @@ public class SolutionService {
         // Supprimer l'ancienne solution du même algo aujourd'hui
         solutionComponent.deleteSolutionByAlgoAndToday(request.getNomAlgorithme());
 
+        // Récupérer les tournées par leurs ids
         Set<TourneeEntity> tournees = request.getTournees_ids().stream()
                 .map(id -> tourneeComponent.getTourneeById(id)
                         .orElseThrow(() -> new RuntimeException("Tournée " + id + " non trouvée")))
                 .collect(Collectors.toSet());
 
+        // Calculer les stats
         double tempsTotal = tournees.stream()
                 .mapToDouble(TourneeEntity::getTempsTotal).sum();
         double distanceTotale = tournees.stream()
@@ -74,4 +76,19 @@ public class SolutionService {
                 .orElseThrow(() -> new RuntimeException("Solution " + id + " non trouvée"));
         return solutionMapper.toResponse(solution);
     }
+
+public SolutionResponseDTO updateSolution(int id, SolutionRequest request) {
+    System.out.println("updateSolution id=" + id + " tempsTotal=" + request.getTempsTotal() + " distanceTotale=" + request.getDistanceTotale() + " nbCommandes=" + request.getNbCommandesLivrees());
+    
+    SolutionEntity solution = solutionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Solution " + id + " non trouvée"));
+
+    solution.setTempsTotal(request.getTempsTotal());
+    solution.setDistanceTotale(request.getDistanceTotale());
+    solution.setCoutTotal((request.getDistanceTotale() * 8.0 / 100.0) * 1.85);
+    solution.setNbCommandesLivrees(request.getNbCommandesLivrees());
+
+    SolutionEntity saved = solutionRepository.saveAndFlush(solution);
+    return solutionMapper.toResponse(saved);
+}
 }

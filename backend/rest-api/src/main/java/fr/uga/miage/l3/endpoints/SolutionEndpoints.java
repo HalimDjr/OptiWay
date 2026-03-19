@@ -5,7 +5,7 @@ import fr.uga.miage.l3.responses.SolutionResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequestMapping("/api/solutions")
 public interface SolutionEndpoints {
     @PostMapping("/solution")
     SolutionResponseDTO saveSolution(@RequestBody SolutionRequest request);
@@ -18,4 +18,7 @@ public interface SolutionEndpoints {
 
     @GetMapping("/{id}")
     SolutionResponseDTO getSolutionById(@PathVariable int id);
+
+    @PutMapping("/{id}")
+    SolutionResponseDTO updateSolution(@PathVariable int id, @RequestBody SolutionRequest request);
 }

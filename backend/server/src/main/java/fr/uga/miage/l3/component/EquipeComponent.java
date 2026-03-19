@@ -32,6 +32,6 @@ public class EquipeComponent {
         return equipe.getNbHeuresMax();
     }
     public List<EquipeEntity> getAllEquipes() {
-        return equipeRepository.findAll();
+        return equipeRepository.findAllWithDetails();
     }
 }

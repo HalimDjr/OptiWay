@@ -11,6 +11,7 @@ interface IndexedAddress {
 
 export interface OptimizationAdvancedResult {
   results: OptimizationResult[];
+  tranches: Adresse[][];
   delivered: number[]; // indices des adresses livrées
   undelivered: number[]; // indices des adresses NON livrées
   stats: {
@@ -93,7 +94,7 @@ export class OptimizeAdvancedService {
     const results: OptimizationResult[] = [];
     const deliveredSet = new Set<number>();
     let failedRoutesCount = 0;
-
+    const tranches: Adresse[][] = [];
     for (let i = 0; i < clusters.length; i++) {
       const cluster = clusters[i];
       if (cluster.length === 0) continue;
@@ -103,8 +104,10 @@ export class OptimizeAdvancedService {
 
       // Split si > 50 (sécurité API ORS)
       const chunks = this.chunkArray(clusterAddresses, 50);
+      
       for (let chunkIdx = 0; chunkIdx < chunks.length; chunkIdx++) {
         const chunk = chunks[chunkIdx];
+        tranches.push([...chunk]); 
         const chunkOriginalIndices = cluster
           .slice(chunkIdx * 50, (chunkIdx + 1) * 50)
           .map(p => p.idx);
@@ -160,7 +163,7 @@ export class OptimizeAdvancedService {
       failedRoutes: failedRoutesCount,
     };
 
-    return { results, delivered, undelivered, stats };
+    return { results,tranches, delivered, undelivered, stats };
   }
 
   // CLUSTERING GÉOGRAPHIQUE BASÉ SUR LES DURÉES RÉELLES (K-Medoids)

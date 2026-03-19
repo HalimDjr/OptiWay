@@ -29,6 +29,14 @@ public interface TourneeEndpoints {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date
     );
+    @Operation(description = "mettre à jour une tournée")
+    @ApiResponse(responseCode = "200", description = "tournée mise à jour")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}")
+    TourneeResponseDTO updateTournee(
+        @PathVariable(name = "id") int id,
+        @RequestBody TourneeRequest tourneeRequest
+);
 
 
 }

@@ -25,3 +25,26 @@ dist/
 # ===== OS =====
 .DS_Store
 Thumbs.db
+
+# Angular cache
+.angular/
+*.tsbuildinfo
+*_metadata.json
+
+# Clé API ORS - NE JAMAIS COMMITTER
+client/src/app/services/orsKey.ts
+
+# Spring config sensible
+backend/server/src/main/resources/application.yml
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+target/
+
+# IDE
+.vscode/
+.idea/
+*.iml

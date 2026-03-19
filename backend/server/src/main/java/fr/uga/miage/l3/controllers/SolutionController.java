@@ -36,4 +36,9 @@ public class SolutionController implements SolutionEndpoints {
     public SolutionResponseDTO getSolutionById(@PathVariable int id) {
         return solutionService.getSolutionById(id);
     }
+
+    @Override
+    public SolutionResponseDTO updateSolution(@PathVariable int id, @RequestBody SolutionRequest request) {
+        return solutionService.updateSolution(id, request);
+}
 }
