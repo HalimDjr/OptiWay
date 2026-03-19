@@ -36,33 +36,22 @@ public class SolutionComponent {
 
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
     public void deleteSolutionByAlgoAndToday(String nomAlgorithme) {
-        // Construire la date du jour à minuit
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-
+        // Plus besoin de calculer la date manuellement
         Optional<SolutionEntity> existing =
-                solutionRepository.findByNomAlgorithmeAndDate(nomAlgorithme, today);
+                solutionRepository.findByNomAlgorithmeAndToday(nomAlgorithme);
+
+        System.out.println("Solution trouvée pour suppression: " + existing.isPresent());
 
         if (existing.isPresent()) {
             SolutionEntity solution = existing.get();
-
-            // Vider les tournées → orphanRemoval supprime les tournées
-            // et les lignes dans tournee_commande
             solution.getTournees().clear();
             solutionRepository.save(solution);
             entityManager.flush();
-
-            // Supprimer la solution via JPA
             solutionRepository.delete(solution);
             entityManager.flush();
-
             System.out.println("Ancienne solution supprimée pour algo: " + nomAlgorithme);
         } else {
-            System.out.println("Pas de solution existante aujourd'hui pour " + nomAlgorithme);
+            System.out.println("Pas de solution existante aujourd'hui pour: " + nomAlgorithme);
         }
     }
 }
