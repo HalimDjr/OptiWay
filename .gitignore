@@ -48,3 +48,5 @@ target/
 .vscode/
 .idea/
 *.iml
+
+client/.angular/
