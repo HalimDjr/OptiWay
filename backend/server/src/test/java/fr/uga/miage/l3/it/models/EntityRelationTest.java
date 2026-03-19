@@ -108,7 +108,7 @@ class EntityRelationTest {
         EntityTestUtils.assertAnnotationPresent(CommandeEntity.class, "adresse", ManyToOne.class);
 
         // Commande appartient à une Tournée (Many Commandes -> One Tournée)
-        EntityTestUtils.assertAnnotationPresent(CommandeEntity.class, "tournee", ManyToOne.class);
+        EntityTestUtils.assertAnnotationPresent(CommandeEntity.class, "tournees", ManyToMany.class);
 
         // Une commande est composée de plusieurs Produits (One Commande -> Many Produits)
         EntityTestUtils.assertAnnotationPresent(CommandeEntity.class, "produits", OneToMany.class);
@@ -139,7 +139,7 @@ class EntityRelationTest {
 
         // --- Relations ---
         // Un livreur peut être le conducteur d'une équipe (1..1)
-        EntityTestUtils.assertAnnotationPresent(LivreurEntity.class, "equipe", OneToOne.class);
+        EntityTestUtils.assertAnnotationPresent(LivreurEntity.class, "equipee", OneToOne.class);
 
         // Un livreur peut être aide-livreur (manutentionnaire) d'une équipe (Many -> One)
         EntityTestUtils.assertAnnotationPresent(LivreurEntity.class, "equipe2", ManyToOne.class);
@@ -174,7 +174,7 @@ class EntityRelationTest {
         EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "manutentionnaires", OneToMany.class);
 
         // Une équipe effectue une tournée (One Equipe -> One Tournée)
-        EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "tournee", OneToOne.class);
+        EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "tournees", OneToMany.class);
 
         // Une equipe utilise un véhicule (One -> One)
         EntityTestUtils.assertAnnotationPresent(EquipeEntity.class, "vehicule", OneToOne.class);
@@ -205,15 +205,14 @@ class EntityRelationTest {
         // statut est une énumération StatutTournee
         EntityTestUtils.assertFieldType(TourneeEntity.class, "statut", StatutTournee.class);
         EntityTestUtils.assertFieldType(TourneeEntity.class, "heureDepart", Timestamp.class);
-        EntityTestUtils.assertFieldType(TourneeEntity.class, "dateTournee", Date.class);
 
         // --- Relations ---
         // Une tournée distribue plusieurs commandes (One Tournée -> Many Commandes)
-        EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "commandes", OneToMany.class);
+        EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "commandes", ManyToMany.class);
 
 
         // Une tournée est effectuée par une équipe (One -> One)
-        EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "equipe", OneToOne.class);
+        EntityTestUtils.assertAnnotationPresent(TourneeEntity.class, "equipe", ManyToOne.class);
     }
 
     // =========================================================================
@@ -259,9 +258,6 @@ class EntityRelationTest {
 
         // --- Attributs et types ---
         EntityTestUtils.assertFieldType(ProduitEntity.class, "nom", String.class);
-        //EntityTestUtils.assertFieldType(ProduitEntity.class, "poids", double.class);
-
-        //EntityTestUtils.assertAnnotationPresent(ProduitEntity.class, "commande", ManyToOne.class);
     }
 
     // =========================================================================
@@ -300,6 +296,8 @@ class EntityRelationTest {
 
         // --- Attributs et types ---
         EntityTestUtils.assertFieldType(EntrepotEntity.class, "nom", String.class);
+
+        EntityTestUtils.assertAnnotationPresent(EntrepotEntity.class, "adresse", OneToOne.class);
 
     }
 

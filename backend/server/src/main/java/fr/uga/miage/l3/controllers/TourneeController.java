@@ -8,16 +8,18 @@ import fr.uga.miage.l3.services.TourneeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", methods = {
+        RequestMethod.GET,
+        RequestMethod.POST,
+        RequestMethod.PUT,
+        RequestMethod.DELETE
+})
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/tournees")
@@ -38,4 +40,8 @@ public class TourneeController  implements TourneeEndpoints {
     public TourneeResponseDTO updateTournee(@PathVariable int id, @RequestBody TourneeRequest tourneeRequest) {
         return tourneeService.updateTournee(id, tourneeRequest);
 }
+    @Override
+    public void deleteTournee(@PathVariable(name = "id") int id) {
+        tourneeService.deleteTournee(id);
+    }
 }

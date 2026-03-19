@@ -197,6 +197,45 @@ export class App implements OnInit {
     });
   }
 
+  protected async supprimerTournee(tourneeId: number): Promise<void> {
+    const solution = this._solutionEnEdition();
+    if (!solution) return;
+
+    try {
+      // Supprimer en base
+      await firstValueFrom(this._api.deleteTournee(tourneeId));
+
+      // Supprimer localement
+      solution.tournees = solution.tournees.filter(
+          (t: any) => t.idTournee !== tourneeId
+      );
+
+      const nbCommandesLivrees = solution.tournees.reduce(
+          (sum: number, t: any) => sum + (t.commandes?.length ?? 0), 0
+      );
+
+      this._solutionEnEdition.set({ ...solution, nbCommandesLivrees });
+
+      // Recalculer les routes sans la tournée supprimée
+      const algo = solution.nomAlgorithme as 'EQUITABLE' | 'SWEEP' | 'CLUSTER';
+      const parking = this._adresses().at(-1)!;
+
+      const nouvellesRoutes = await this.optimisationFacade.afficherDepuisBackend(
+          { ...solution, nbCommandesLivrees },
+          parking
+      );
+
+      // Mettre à jour les routes sur la carte
+      this._routes.set(nouvellesRoutes);
+      this._routesParAlgo.update(r => ({ ...r, [algo]: nouvellesRoutes }));
+
+    } catch (err) {
+      console.error('Erreur suppression tournée:', err);
+      this._erreur.set('Erreur lors de la suppression de la tournée');
+      setTimeout(() => this._erreur.set(''), 3000);
+    }
+  }
+
   protected async optimizeRoutesEquitable(nbVehicules: number, maxTime: number): Promise<void> {
     if (nbVehicules > this.nombreEquipesMax()) {
       this._erreur.set(`⚠️ Seulement ${this.nombreEquipesMax()} équipes disponibles.`);
@@ -454,9 +493,78 @@ export class App implements OnInit {
     this._solutionEnEdition.set({ ...solution });
   }
 
+  // Supprimer une commande d'une tournée
+  protected supprimerCommande(commande: any, tourneeId: number): void {
+    const solution = this._solutionEnEdition();
+    if (!solution) return;
+
+    const tournee = solution.tournees.find((t: any) => t.idTournee === tourneeId);
+    if (!tournee) return;
+
+    tournee.commandes = tournee.commandes.filter(
+        (c: any) => c.numeroCommande !== commande.numeroCommande
+    );
+
+    const nbCommandesLivrees = solution.tournees.reduce(
+        (sum: number, t: any) => sum + (t.commandes?.length ?? 0), 0
+    );
+    this._solutionEnEdition.set({ ...solution, nbCommandesLivrees });
+  }
+
+// Récupérer les commandes disponibles (non présentes dans aucune tournée de la solution)
+  protected commandesDisponibles(): any[] {
+    const solution = this._solutionEnEdition();
+    if (!solution) return [];
+
+    // Toutes les commandes déjà dans la solution
+    const commandesDansSolution = new Set<string>(
+        solution.tournees.flatMap((t: any) =>
+            (t.commandes ?? []).map((c: any) => c.numeroCommande)
+        )
+    );
+
+    // Commandes non livrées qui ne sont pas dans la solution
+    return this.commandes().filter(
+        (cmd: any) => !commandesDansSolution.has(cmd.numeroCommande)
+    );
+  }
+
+// Ajouter une commande à une tournée
+  protected ajouterCommande(commande: any, tourneeId: number): void {
+    const solution = this._solutionEnEdition();
+    if (!solution) return;
+
+    const tournee = solution.tournees.find((t: any) => t.idTournee === tourneeId);
+    if (!tournee) return;
+
+    // Vérifier que la commande n'est pas déjà dans cette tournée
+    const dejaPresente = tournee.commandes.some(
+        (c: any) => c.numeroCommande === commande.numeroCommande
+    );
+    if (dejaPresente) return;
+
+    // Ajouter avec les coordonnées depuis la liste des commandes chargées
+    const commandeComplete = {
+      numeroCommande: commande.numeroCommande,
+      latitude: commande.latitude,
+      longtitude: commande.longtitude
+    };
+
+    tournee.commandes.push(commandeComplete);
+
+    const nbCommandesLivrees = solution.tournees.reduce(
+        (sum: number, t: any) => sum + (t.commandes?.length ?? 0), 0
+    );
+    this._solutionEnEdition.set({ ...solution, nbCommandesLivrees });
+  }
+
+  protected readonly _sauvegardEnCours = signal<boolean>(false);
+  protected readonly _sauvegardSucces = signal<boolean>(false);
   protected async sauvegarderModifications(): Promise<void> {
     const solutionModifiee = this._solutionEnEdition();
     const solutionOriginale = this.solutionFacade.solutionModal();
+    this._sauvegardEnCours.set(true);
+    this._sauvegardSucces.set(false);
     if (!solutionModifiee || !solutionOriginale) return;
     const equipesUtilisees = solutionModifiee.tournees.map((t: any) => t.numeroEquipe);
     const equipesUniques = new Set(equipesUtilisees);
@@ -614,12 +722,15 @@ export class App implements OnInit {
           this._warning.set(warnings.join('\n'));
         }
       }, 50);
+      this._sauvegardSucces.set(true);
+      setTimeout(() => this._sauvegardSucces.set(false), 3000);
       this.annulerEdition();
     } catch (err) {
       console.error('Erreur sauvegarde modifications:', err);
     } finally {
       this._isLoading.set(false);
       this._loadingMessage.set('');
+      this._sauvegardEnCours.set(false);
     }
   }
 

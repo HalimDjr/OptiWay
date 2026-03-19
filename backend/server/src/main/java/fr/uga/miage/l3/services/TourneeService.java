@@ -134,4 +134,9 @@ public TourneeResponseDTO updateTournee(int id, TourneeRequest request) {
     TourneeEntity saved = tourneeComponent.createTournee(tournee);
     return tourneeMapper.toResponse(saved);
 }
+    public void deleteTournee(int id) {
+        tourneeComponent.getTourneeById(id)
+                .orElseThrow(() -> new RuntimeException("Tournée " + id + " non trouvée"));
+        tourneeComponent.deleteTournee(id);
+    }
 }

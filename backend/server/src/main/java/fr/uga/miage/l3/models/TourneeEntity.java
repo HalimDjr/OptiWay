@@ -34,6 +34,6 @@ public class TourneeEntity {
     )
     private Set<CommandeEntity> commandes;
 
-    @ManyToOne  // ← au lieu de @OneToOne
+    @ManyToOne  //au lieu de @OneToOne
     private EquipeEntity equipe;
 }

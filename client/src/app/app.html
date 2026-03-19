@@ -431,6 +431,12 @@
                                                         </option>
                                                     }
                                                 </select>
+                                                <!-- Bouton supprimer tournée -->
+                                                <button class="btn-supprimer-tournee"
+                                                        (click)="supprimerTournee(tournee.idTournee)"
+                                                        title="Supprimer cette tournée">
+                                                    🗑️ Supprimer
+                                                </button>
                                             } @else {
                                                 <span class="tournee-equipe">Équipe {{ tournee.numeroEquipe }}</span>
                                             }
@@ -449,15 +455,42 @@
                                                 @for (cmd of tournee.commandes; track cmd.numeroCommande) {
                                                     <div class="commande-edit-item">
                                                         <span class="cmd-edit-num">{{ cmd.numeroCommande }}</span>
-                                                        <select class="cmd-move-select"
-                                                                (change)="deplacerCommande(cmd, tournee.idTournee, +getSelectValue($event))">
-                                                            <option value="">Déplacer vers...</option>
-                                                            @for (t of _solutionEnEdition()!.tournees; track t.idTournee) {
-                                                                @if (t.idTournee !== tournee.idTournee) {
-                                                                    <option [value]="t.idTournee">
-                                                                        → #{{ t.idTournee }} (Éq.{{ t.numeroEquipe }})
-                                                                    </option>
+                                                        <div class="cmd-edit-actions">
+                                                            <!-- Déplacer vers une autre tournée -->
+                                                            <select class="cmd-move-select"
+                                                                    (change)="deplacerCommande(cmd, tournee.idTournee, +getSelectValue($event))">
+                                                                <option value="">Déplacer vers...</option>
+                                                                @for (t of _solutionEnEdition()!.tournees; track t.idTournee) {
+                                                                    @if (t.idTournee !== tournee.idTournee) {
+                                                                        <option [value]="t.idTournee">
+                                                                            → #{{ t.idTournee }} (Éq.{{ t.numeroEquipe }})
+                                                                        </option>
+                                                                    }
                                                                 }
+                                                            </select>
+                                                            <!-- Supprimer la commande -->
+                                                            <button class="btn-supprimer-cmd"
+                                                                    (click)="supprimerCommande(cmd, tournee.idTournee)"
+                                                                    title="Supprimer de cette tournée">
+                                                                🗑️
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                <!-- Ajouter une commande disponible -->
+                                                @if (commandesDisponibles().length > 0) {
+                                                    <div class="ajouter-commande">
+                                                        <select class="cmd-add-select"
+                                                                (change)="ajouterCommande(
+                            commandesDisponibles()[+getSelectValue($event)],
+                            tournee.idTournee
+                        ); $any($event.target).value = ''">
+                                                            <option value="">+ Ajouter une commande...</option>
+                                                            @for (cmd of commandesDisponibles(); track cmd.numeroCommande; let i = $index) {
+                                                                <option [value]="i">
+                                                                    {{ cmd.numeroCommande }}
+                                                                </option>
                                                             }
                                                         </select>
                                                     </div>
@@ -505,9 +538,22 @@
                         </div>
 
                         @if (_modificationEnCours()) {
-                            <button class="btn-sauvegarder-edit" (click)="sauvegarderModifications()">
-                                💾 Sauvegarder et recalculer
+                            <button class="btn-sauvegarder-edit"
+                                    (click)="sauvegarderModifications()"
+                                    [disabled]="_sauvegardEnCours()">
+                                @if (_sauvegardEnCours()) {
+                                    <span class="spinner-btn"></span>
+                                    Sauvegarde en cours...
+                                } @else {
+                                    💾 Sauvegarder et recalculer
+                                }
                             </button>
+                        }
+
+                        @if (_sauvegardSucces()) {
+                            <div class="succes-banner">
+                                ✅ Solution sauvegardée avec succès !
+                            </div>
                         }
 
                         <button class="btn-voir-carte" (click)="afficherSolutionSurCarte(solutionModal())">

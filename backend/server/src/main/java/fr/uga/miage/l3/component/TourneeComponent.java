@@ -33,4 +33,7 @@ public class TourneeComponent {
     public Optional<TourneeEntity> getTourneeById(int id) {
         return tourneeRepository.findById(id);
     }
+    public void deleteTournee(int id) {
+        tourneeRepository.deleteById(id);
+    }
 }

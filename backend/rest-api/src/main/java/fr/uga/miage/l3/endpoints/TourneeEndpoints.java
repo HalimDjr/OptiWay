@@ -37,6 +37,10 @@ public interface TourneeEndpoints {
         @PathVariable(name = "id") int id,
         @RequestBody TourneeRequest tourneeRequest
 );
-
+    @Operation(description = "Supprimer une tournée")
+    @ApiResponse(responseCode = "200", description = "Tournée supprimée")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    void deleteTournee(@PathVariable(name = "id") int id);
 
 }

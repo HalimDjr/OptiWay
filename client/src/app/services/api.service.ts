@@ -72,4 +72,7 @@ export class ApiService {
     return this.http.put<any>(`${this.apiUrl}/solutions/${id}`, data);
 }
 
+    deleteTournee(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/tournees/${id}`);
+    }
 }
