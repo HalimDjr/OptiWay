@@ -21,6 +21,9 @@ public class CommandComponent {
             throw new NotFoundCommandException("erreur dans la récupération des Commandes non livrés");
         }
     }
+    public void updateStatutCommandes(Set<String> ids, StatutCommande statut) {
+        commandeRepository.updateStatutByIds(ids, statut);
+}
 
 }
 

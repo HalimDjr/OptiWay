@@ -64,15 +64,19 @@ export class ApiService {
     }
     getEntrepot(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/entrepot/${id}`);
-}
+    }
    updateTournee(tournee: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/tournees/${tournee.idTournee}`, tournee);
-}
+    }
     updateSolution(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/solutions/${id}`, data);
-}
+    }
 
     deleteTournee(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/tournees/${id}`);
+    }
+
+    planifierCommandes(id: number): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/solutions/${id}/planifier`, {});
     }
 }

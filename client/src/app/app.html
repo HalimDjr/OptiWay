@@ -36,8 +36,8 @@
                                 <td class="cmd-id">{{ cmd.numeroCommande }}</td>
                                 <td>{{ cmd.dateLimite ? cmd.dateLimite.substring(0, 10) : '' }}</td>
                                 <td>
-                                    <span class="badge-statut statut-{{ cmd.statut?.toLowerCase() }}">
-                                        {{ cmd.statut }}
+                                    <span class="badge-statut statut-{{ cmd.status?.toLowerCase() }}">
+                                        {{ cmd.status }}
                                     </span>
                                 </td>
                                 <td>{{ cmd.poids }}</td>
@@ -188,7 +188,9 @@
             <div class="solutions-grid">
 
                 <!-- SOLUTION ÉQUITABLE -->
-                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'EQUITABLE'">
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'EQUITABLE'"
+                     [class.solution-validee]="solutionValidee() === 'EQUITABLE'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Équitable</span>
@@ -196,6 +198,9 @@
                                 <span class="badge badge-equitable">Distribution</span>
                                 @if (meilleureSolution() === 'EQUITABLE') {
                                     <span class="badge badge-best">Meilleure</span>
+                                }
+                                @if (solutionValidee() === 'EQUITABLE') {
+                                    <span class="badge badge-validee">✅ Validée</span>
                                 }
                             </div>
                         </div>
@@ -241,15 +246,24 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
-                                (click)="validerSolution(solutionEquitable().id)">
-                            Valider cette solution
-                        </button>
+                        @if (!solutionValidee()) {
+                            <button class="btn-valider"
+                                    [class.btn-valider-best]="meilleureSolution() === 'EQUITABLE'"
+                                    (click)="confirmerValidation(solutionEquitable().id, 'EQUITABLE')">
+                                Valider cette solution
+                            </button>
+                        } @else if (solutionValidee() === 'EQUITABLE') {
+                            <button class="btn-valider btn-valide" disabled>
+                                ✅ Solution validée
+                            </button>
+                        }
                     }
                 </div>
 
                 <!-- SOLUTION SWEEP -->
-                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'SWEEP'">
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'SWEEP'"
+                     [class.solution-validee]="solutionValidee() === 'SWEEP'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Balayeuse</span>
@@ -257,6 +271,9 @@
                                 <span class="badge badge-sweep">Sweep</span>
                                 @if (meilleureSolution() === 'SWEEP') {
                                     <span class="badge badge-best">Meilleure</span>
+                                }
+                                @if (solutionValidee() === 'SWEEP') {
+                                    <span class="badge badge-validee">✅ Validée</span>
                                 }
                             </div>
                         </div>
@@ -302,15 +319,24 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
-                                (click)="validerSolution(solutionSweep().id)">
-                            Valider cette solution
-                        </button>
+                        @if (!solutionValidee()) {
+                            <button class="btn-valider"
+                                    [class.btn-valider-best]="meilleureSolution() === 'SWEEP'"
+                                    (click)="confirmerValidation(solutionSweep().id, 'SWEEP')">
+                                Valider cette solution
+                            </button>
+                        } @else if (solutionValidee() === 'SWEEP') {
+                            <button class="btn-valider btn-valide" disabled>
+                                ✅ Solution validée
+                            </button>
+                        }
                     }
                 </div>
 
                 <!-- SOLUTION CLUSTER -->
-                <div class="solution-card" [class.solution-best]="meilleureSolution() === 'CLUSTER'">
+                <div class="solution-card"
+                     [class.solution-best]="meilleureSolution() === 'CLUSTER'"
+                     [class.solution-validee]="solutionValidee() === 'CLUSTER'">
                     <div class="solution-card-header">
                         <div class="solution-title-row">
                             <span class="solution-name">Clusters</span>
@@ -318,6 +344,9 @@
                                 <span class="badge badge-cluster">Durée min</span>
                                 @if (meilleureSolution() === 'CLUSTER') {
                                     <span class="badge badge-best">Meilleure</span>
+                                }
+                                @if (solutionValidee() === 'CLUSTER') {
+                                    <span class="badge badge-validee">✅ Validée</span>
                                 }
                             </div>
                         </div>
@@ -363,10 +392,17 @@
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-valider" [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
-                                (click)="validerSolution(solutionCluster().id)">
-                            Valider cette solution
-                        </button>
+                        @if (!solutionValidee()) {
+                            <button class="btn-valider"
+                                    [class.btn-valider-best]="meilleureSolution() === 'CLUSTER'"
+                                    (click)="confirmerValidation(solutionCluster().id, 'CLUSTER')">
+                                Valider cette solution
+                            </button>
+                        } @else if (solutionValidee() === 'CLUSTER') {
+                            <button class="btn-valider btn-valide" disabled>
+                                ✅ Solution validée
+                            </button>
+                        }
                     }
                 </div>
 
@@ -456,7 +492,6 @@
                                                     <div class="commande-edit-item">
                                                         <span class="cmd-edit-num">{{ cmd.numeroCommande }}</span>
                                                         <div class="cmd-edit-actions">
-                                                            <!-- Déplacer vers une autre tournée -->
                                                             <select class="cmd-move-select"
                                                                     (change)="deplacerCommande(cmd, tournee.idTournee, +getSelectValue($event))">
                                                                 <option value="">Déplacer vers...</option>
@@ -468,7 +503,6 @@
                                                                     }
                                                                 }
                                                             </select>
-                                                            <!-- Supprimer la commande -->
                                                             <button class="btn-supprimer-cmd"
                                                                     (click)="supprimerCommande(cmd, tournee.idTournee)"
                                                                     title="Supprimer de cette tournée">
@@ -478,7 +512,6 @@
                                                     </div>
                                                 }
 
-                                                <!-- Ajouter une commande disponible -->
                                                 @if (commandesDisponibles().length > 0) {
                                                     <div class="ajouter-commande">
                                                         <select class="cmd-add-select"
@@ -559,10 +592,18 @@
                         <button class="btn-voir-carte" (click)="afficherSolutionSurCarte(solutionModal())">
                             Voir sur la carte principale
                         </button>
-                        <button class="btn-valider-modal"
-                                (click)="validerSolution(solutionModal().id); fermerModal()">
-                            Valider cette solution
-                        </button>
+
+                        @if (!solutionValidee()) {
+                            <button class="btn-valider-modal"
+                                    (click)="confirmerValidation(solutionModal().id, solutionModal().nomAlgorithme); fermerModal()">
+                                Valider cette solution
+                            </button>
+                        } @else if (solutionValidee() === solutionModal()?.nomAlgorithme) {
+                            <button class="btn-valider-modal btn-valide" disabled>
+                                ✅ Solution validée
+                            </button>
+                        }
+
                     </div>
                 </div>
             </div>

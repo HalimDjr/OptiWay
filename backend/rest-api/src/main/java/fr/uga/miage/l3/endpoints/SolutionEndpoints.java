@@ -21,4 +21,7 @@ public interface SolutionEndpoints {
 
     @PutMapping("/{id}")
     SolutionResponseDTO updateSolution(@PathVariable int id, @RequestBody SolutionRequest request);
+    
+    @PutMapping("/{id}/planifier")
+    void planifierCommandes(@PathVariable int id);
 }

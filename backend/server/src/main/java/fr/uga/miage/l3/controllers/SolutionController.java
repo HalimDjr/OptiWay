@@ -40,5 +40,10 @@ public class SolutionController implements SolutionEndpoints {
     @Override
     public SolutionResponseDTO updateSolution(@PathVariable int id, @RequestBody SolutionRequest request) {
         return solutionService.updateSolution(id, request);
-}
+    }
+
+    @Override
+    public void planifierCommandes(@PathVariable int id) {
+        solutionService.planifierCommandes(id);
+    }
 }

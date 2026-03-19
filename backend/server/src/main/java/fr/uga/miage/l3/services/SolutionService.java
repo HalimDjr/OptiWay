@@ -1,11 +1,15 @@
 package fr.uga.miage.l3.services;
 
+import fr.uga.miage.l3.component.CommandComponent;
 import fr.uga.miage.l3.component.SolutionComponent;
 import fr.uga.miage.l3.component.TourneeComponent;
+import fr.uga.miage.l3.enums.StatutCommande;
 import fr.uga.miage.l3.mappers.SolutionMapper;
+import fr.uga.miage.l3.models.CommandeEntity;
 import fr.uga.miage.l3.models.SolutionEntity;
 import fr.uga.miage.l3.models.TourneeEntity;
 import fr.uga.miage.l3.repository.SolutionRepository;
+import fr.uga.miage.l3.repository.CommandeRepository;
 import fr.uga.miage.l3.request.SolutionRequest;
 import fr.uga.miage.l3.responses.SolutionResponseDTO;
 import jakarta.transaction.Transactional;
@@ -90,5 +94,18 @@ public SolutionResponseDTO updateSolution(int id, SolutionRequest request) {
 
     SolutionEntity saved = solutionRepository.saveAndFlush(solution);
     return solutionMapper.toResponse(saved);
+}
+private final CommandComponent commandComponent;
+@Transactional
+public void planifierCommandes(int solutionId) {
+    SolutionEntity solution = solutionRepository.findById(solutionId)
+            .orElseThrow(() -> new RuntimeException("Solution " + solutionId + " non trouvée"));
+
+    Set<String> commandeIds = solution.getTournees().stream()
+            .flatMap(t -> t.getCommandes().stream())
+            .map(CommandeEntity::getNumeroCommande)
+            .collect(Collectors.toSet());
+
+    commandComponent.updateStatutCommandes(commandeIds, StatutCommande.PLANIFIEE);
 }
 }

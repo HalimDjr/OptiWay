@@ -164,16 +164,35 @@ export class App implements OnInit {
     });
   }
 
-  protected async validerSolution(id: number): Promise<void> {
+protected async validerSolution(id: number): Promise<void> {
     this._isLoading.set(true);
     this._loadingMessage.set('Validation...');
     try {
-      await this.solutionFacade.valider(id);
+        await this.solutionFacade.valider(id);
+        await firstValueFrom(this._api.planifierCommandes(id));
+
+        // Met à jour le statut des commandes en front
+        const solution =
+            this.solutionFacade.solutionEquitable()?.id === id ? this.solutionFacade.solutionEquitable() :
+            this.solutionFacade.solutionSweep()?.id === id ? this.solutionFacade.solutionSweep() :
+            this.solutionFacade.solutionCluster();
+
+        if (solution) {
+            const commandesPlanifiees = new Set(
+                solution.tournees.flatMap((t: any) => t.commandes.map((c: any) => c.numeroCommande))
+            );
+            this.commandes.update(cmds =>
+                cmds.map((cmd: any) => commandesPlanifiees.has(cmd.numeroCommande)
+                    ? { ...cmd, status: 'PLANIFIEE' }
+                    : cmd
+                )
+            );
+        }
     } finally {
-      this._isLoading.set(false);
-      this._loadingMessage.set('');
+        this._isLoading.set(false);
+        this._loadingMessage.set('');
     }
-  }
+}
 
   protected async afficherSolutionSurCarte(solution: any): Promise<void> {
     const algo = solution.nomAlgorithme as 'EQUITABLE' | 'SWEEP' | 'CLUSTER';
@@ -733,6 +752,14 @@ export class App implements OnInit {
       this._sauvegardEnCours.set(false);
     }
   }
+protected readonly solutionValidee = signal<string>('');
+
+protected confirmerValidation(id: number, algo: string): void {
+    if (confirm('Confirmer la validation de cette solution ?')) {
+        this.validerSolution(id);
+        this.solutionValidee.set(algo);
+    }
+}
 
   protected getSelectValue(event: Event): string {
     return (event.target as HTMLSelectElement).value;
