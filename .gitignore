@@ -7,8 +7,8 @@ target/
 *.jar
 *.war
 *.class
-application-local.properties
-application-local.yml
+#application-local.properties
+#application-local.yml
 
 # ===== ANGULAR =====
 node_modules/
@@ -32,10 +32,10 @@ Thumbs.db
 *_metadata.json
 
 # Clé API ORS - NE JAMAIS COMMITTER
-client/src/app/services/orsKey.ts
+#client/src/app/services/orsKey.ts
 
 # Spring config sensible
-backend/server/src/main/resources/application.yml
+#backend/server/src/main/resources/application.yml
 
 # Node modules
 node_modules/
